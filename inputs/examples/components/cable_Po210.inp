@@ -1,0 +1,77 @@
+
+################################################################################
+###                               GEOMETRY                                   ###
+################################################################################
+
+WORLDSIZE 10 # OPTIONAL
+
+
+# VOLUMES: 
+
+VOLUME 11 CuCable     21 3 12 DummyWord 0.025 2 0 0 0
+VOLUME 12 fepInsul    22 3 0  DummyWord 0.1   2 0 0 0
+
+
+# MATERIALS:
+
+MATERIAL 21 Cu 8.96 2
+29063 0.6915
+29065 0.3085
+ENDMATERIAL
+
+MATERIAL 22 FEP 2.15 3
+6012 0.9893
+6013 0.0107
+9019 3.0
+ENDMATERIAL
+
+MATERIAL 23 LAr 1.4 1
+18040 1.
+ENDMATERIAL
+
+
+
+################################################################################
+###                                SOURCE                                    ###
+################################################################################
+
+#U238 middle chain decays
+
+SOURCE 0 11
+1.0 5
+82210  3.72  1.9e-06
+83210  4.694  5.2e-05
+83210  4.656  7.8e-05
+84210  5.30433  99.99987
+84210  4.51658  0.001039998648
+ENDSOURCE
+
+################################################################################
+###                                PHYSICS                                   ###
+################################################################################
+
+MAXSTEPSIZE 0.00001     # OPTIONAL
+BIASFACTOR 10000   # OPTIONAL
+
+
+################################################################################
+###                                OTHER                                     ###
+################################################################################
+
+NEVENTS 500000       # OPTIONAL
+OUTPUTFILE outputs/examples/components/cable_Po210 # without the extension
+OUTPUTTYPE 1 1 2 #OPTIONAL
+
+# if defined, interactive running mode:
+# INTERACTIVE
+
+# if defined, secondary particles are not killed when created:
+# DONOTKILLSECONDARIES
+
+# New seed for the MC (default is 1234567):
+SEED 1234567 #OPTIONAL
+
+
+END
+
+

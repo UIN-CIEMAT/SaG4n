@@ -1,0 +1,79 @@
+
+################################################################################
+###                               GEOMETRY                                   ###
+################################################################################
+
+WORLDSIZE 1000 # OPTIONAL
+
+
+# VOLUMES: 
+
+# A sphere made of CH2 placed in the center:
+VOLUME 12 Box01   7 2 0 - 10 10 20 0 0 0
+VOLUME 14 Cylinder01   8 3 12 -  3 10 1 -1 -3
+VOLUME 25 Box02   9 2 14 - 3 2 1 0.5 -0.5 0.5
+
+
+# MATERIALS:
+
+MATERIAL 7 CH2 0.93 4
+1001 1.99977
+1002 0.00023
+6012 0.9893
+6013 0.0107
+ENDMATERIAL
+
+MATERIAL 8 C 2.266 2
+6012 0.9893
+6013 0.0107
+ENDMATERIAL
+
+MATERIAL 9 H2O 1.00 5
+1001 1.99977
+1002 0.00023
+8016 0.99757
+8017 0.00038
+8018 0.00205
+ENDMATERIAL
+
+
+
+
+################################################################################
+###                                SOURCE                                    ###
+################################################################################
+
+
+SOURCE 0 25
+1.00 1
+Dummy 8.00 1.00
+ENDSOURCE
+
+################################################################################
+###                                PHYSICS                                   ###
+################################################################################
+
+MAXSTEPSIZE 0.001     # OPTIONAL
+BIASFACTOR 1000   # OPTIONAL
+
+
+################################################################################
+###                                OTHER                                     ###
+################################################################################
+
+NEVENTS 100000       # OPTIONAL
+OUTPUTFILE ./outputs/geometry/geom03 # without the extension
+OUTPUTTYPE 0 0 2 #OPTIONAL
+
+# if defined, interactive running mode:
+INTERACTIVE
+
+# if defined, secondary particles are not killed when created:
+# DONOTKILLSECONDARIES
+
+# New seed for the MC (default is 1234567):
+# SEED 1234567 #OPTIONAL
+
+
+END
+

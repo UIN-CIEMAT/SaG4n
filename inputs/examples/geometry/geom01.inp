@@ -1,0 +1,85 @@
+
+################################################################################
+###                               GEOMETRY                                   ###
+################################################################################
+
+WORLDSIZE 1000 # OPTIONAL
+
+
+# VOLUMES: 
+
+# A sphere made of CH2 placed in the center:
+VOLUME 77 Sphere01    7 1 0 - 5 0 0 0
+# A parallelepiped made of C placed at -20 cm in the X axis:
+VOLUME 49 Box01       8 2 0 - 7 7 7  -20 0 0
+# A cylinder made of H2O placed at +20 cm in the X axis:
+VOLUME 54 Cylinder01  9 3 0 - 5 10  +20 0 0
+
+
+# MATERIALS:
+
+MATERIAL 7 CH2 0.93 4
+1001 1.99977
+1002 0.00023
+6012 0.9893
+6013 0.0107
+ENDMATERIAL
+
+MATERIAL 8 C 2.266 2
+6012 0.9893
+6013 0.0107
+ENDMATERIAL
+
+MATERIAL 9 H2O 1.00 5
+1001 1.99977
+1002 0.00023
+8016 0.99757
+8017 0.00038
+8018 0.00205
+ENDMATERIAL
+
+
+
+
+################################################################################
+###                                SOURCE                                    ###
+################################################################################
+
+# Copy one of these to thow the source from one or other volume:
+# SOURCE 1 5 0 0 0 
+# SOURCE 2 7 7 7  -20 0 0 
+# SOURCE 3 5 10  +20 0 0 
+
+SOURCE 3 5 10  +20 0 0 
+1.00 1
+Dummy 8.00 1.00
+ENDSOURCE
+
+################################################################################
+###                                PHYSICS                                   ###
+################################################################################
+
+MAXSTEPSIZE 0.001     # OPTIONAL
+BIASFACTOR 1000   # OPTIONAL
+
+
+################################################################################
+###                                OTHER                                     ###
+################################################################################
+
+NEVENTS 100000       # OPTIONAL
+OUTPUTFILE ./outputs/geometry/geom01 # without the extension
+OUTPUTTYPE 0 0 2 #OPTIONAL
+
+# if defined, interactive running mode:
+INTERACTIVE
+
+# if defined, secondary particles are not killed when created:
+# DONOTKILLSECONDARIES
+
+# New seed for the MC (default is 1234567):
+# SEED 1234567 #OPTIONAL
+
+
+END
+

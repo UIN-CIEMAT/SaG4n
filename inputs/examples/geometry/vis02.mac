@@ -1,0 +1,20 @@
+
+
+
+/vis/open OGL 600x600-0+0
+/vis/verbose errors
+/vis/viewer/set/style surface
+/vis/drawVolume
+/vis/geometry/set/colour BigBox 0 green
+/vis/geometry/set/colour MedBox01 0 green
+/vis/geometry/set/colour MedBox02 0 green
+/vis/geometry/set/colour Wheels01 0 blue
+/vis/geometry/set/colour Wheels02 0 blue
+/vis/geometry/set/colour Wheels03 0 blue
+/vis/geometry/set/colour Wheels04 0 blue
+
+/vis/viewer/set/upVector 0 1 0
+/vis/viewer/set/viewpointThetaPhi 40 10
+/vis/viewer/set/lightsVector 0.2 0.5 0.3
+
+
