@@ -1,6 +1,24 @@
 
 
 
+
+================================================================================
+                              February 2020
+--------------------------------------------------------------------------------
+E. Mendoza
+  - SaG4n.01.01
+     + Materials can be now defined from their elements, in addition to by
+     isotopes, assuming natural isotopic abundances.
+     + The alpha energy spectra of the Th-232, U-235 and U-238 decay series,
+     in secular equilibrium, have been implemented inside SaG4n, and they can be
+     easily added to the initial alpha energy spectrum.
+     + U-235 and U-238 decay series inside inputs/examples/sources/ have been
+     corrected: the alpha energies are now in MeV.
+     + New inputs are provided in the inputs/examples folder.
+     + Some extra minor changes have been also implemented (new checks and
+     warnings ...).
+================================================================================
+
 ================================================================================
                                January 2020
 --------------------------------------------------------------------------------

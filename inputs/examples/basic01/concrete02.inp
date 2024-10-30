@@ -1,0 +1,68 @@
+
+
+################################################################################
+###                               GEOMETRY                                   ###
+################################################################################
+
+WORLDSIZE 1000 # OPTIONAL
+
+
+# VOLUMES: 
+
+# A 2x2x2 cm3 cube placed in the center:
+VOLUME 1 Vol01 1 2 0 DummyWord 2 2 2 0 0 0
+
+
+# MATERIALS:
+
+MATERIAL 1 PDG_Concrete 2.3 10
+1   -0.010000
+6   -0.001000
+8   -0.529107
+11  -0.016000
+12  -0.002000
+13  -0.033872
+14  -0.337021
+19  -0.013000
+20  -0.044000
+26  -0.014000
+ENDMATERIAL
+
+
+################################################################################
+###                                SOURCE                                    ###
+################################################################################
+
+
+SOURCE 1 0 0 0 0
+1.00 1
+Chain_Th232 0 100.0
+ENDSOURCE
+
+
+################################################################################
+###                                PHYSICS                                   ###
+################################################################################
+
+MAXSTEPSIZE 0.001     # OPTIONAL
+BIASFACTOR 10000   # OPTIONAL
+
+################################################################################
+###                                OTHER                                     ###
+################################################################################
+
+NEVENTS 10000000       # OPTIONAL
+OUTPUTFILE ./outputs/examples/basic01/concrete02 # without the extension
+OUTPUTTYPE 1 1 2 #OPTIONAL
+
+# if defined, interactive running mode:
+# INTERACTIVE
+
+# if defined, secondary particles are not killed when created:
+# DONOTKILLSECONDARIES
+
+# New seed for the MC (default is 1234567):
+SEED 1234567 #OPTIONAL
+
+
+END

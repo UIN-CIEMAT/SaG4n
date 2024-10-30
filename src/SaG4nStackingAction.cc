@@ -92,7 +92,7 @@ void SaG4nStackingAction::Init(){
     OutFname=theInputManager->GetOutFname()+G4String(".out");
     out.open(OutFname);
     if(!out.good()){
-      G4cout<<" ############ Error opening file "<<OutFname<<" ############"<<G4endl; exit(1);
+      G4cout<<" ############ Error opening file "<<OutFname<<" (please set the appropriate path in the OUTPUTFILE field of the input file) ############"<<G4endl; exit(1);
     }
     G4int CWidth=15;
     out<<std::setw(CWidth)<<"EventNumber"<<" "<<std::setw(CWidth)<<"parName"<<"  "<<std::setw(CWidth)<<"parEnergy (MeV)"<<"  "<<std::setw(CWidth)<<"parWeight"<<"  "<<std::setw(CWidth)<<"pos_x (cm)"<<"  "<<std::setw(CWidth)<<"pos_y (cm)"<<"  "<<std::setw(CWidth)<<"pos_z (cm)"<<"  "<<std::setw(CWidth)<<"ux"<<"  "<<std::setw(CWidth)<<"uy"<<"  "<<std::setw(CWidth)<<"uz";

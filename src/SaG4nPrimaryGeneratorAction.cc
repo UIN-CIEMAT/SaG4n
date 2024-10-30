@@ -194,6 +194,19 @@ void SaG4nPrimaryGeneratorAction::Init(){
   theInputManager->SetNormalizationFactor(SourceNormFactor);
   //==========================================================================================================
 
+  /*
+  G4cout<<" ======================================================================= "<<G4endl;
+  G4cout<<"                        SOURCE ENERGY DISTRIBUTION                       "<<G4endl;
+  G4cout<<" ======================================================================= "<<G4endl;
+  G4cout<<" Number of initial alpha energies: "<<NSourceEnergies<<G4endl;
+  G4cout<<std::setw(15)<<"Energy (MeV)"<<std::setw(15)<<"Intensity"<<G4endl;
+  G4cout<<" ----------------------------------------------------------------------- "<<G4endl;
+  G4cout<<std::setw(15)<<SourceEnergy[0]<<std::setw(15)<<SourceCumulProb[0]*SourceNormFactor<<G4endl;
+  for(G4int i=1;i<NSourceEnergies;i++){
+    G4cout<<std::setw(15)<<SourceEnergy[i]<<std::setw(15)<<(SourceCumulProb[i]-SourceCumulProb[i-1])*SourceNormFactor<<G4endl;
+  }
+  G4cout<<" ======================================================================= "<<G4endl;
+  */
 }
 
 

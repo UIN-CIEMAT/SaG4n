@@ -70,7 +70,7 @@ BIASFACTOR 10000   # OPTIONAL
 ###                                OTHER                                     ###
 ################################################################################
 
-NEVENTS 1000000       # OPTIONAL
+NEVENTS 10000000       # OPTIONAL
 OUTPUTFILE ./outputs/examples/yields/yield08 # without the extension
 OUTPUTTYPE 1 0 2 #OPTIONAL
 

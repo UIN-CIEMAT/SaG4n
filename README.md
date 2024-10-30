@@ -7,7 +7,7 @@ Authors: Emilio Mendoza Cembranos, Daniel Cano Ott, Vicente Pesudo Fortes and Ro
 
 Contact: [emilio.mendoza@ciemat.es](mailto:emilio.mendoza@ciemat.es), [daniel.cano@ciemat.es](mailto:daniel.cano@ciemat.es), [vicente.pesudo@ciemat.es](mailto:vicente.pesudo@ciemat.es), [roberto.santorelli@ciemat.es](mailto:roberto.santorelli@ciemat.es)
 
-Date: January 2020
+Date: February 2020
 
 GitHub: https://github.com/UIN-CIEMAT/SaG4n
 
@@ -41,6 +41,7 @@ The SaG4n code, together with different (alpha,xn) data libraries can be downloa
 - `inputs/examples`: Some SaG4n input examples
 - `outputs/examples_reference`: reference outputs of the input examples
 - `docs`: SaG4n manual
+- `History`: list of changes along the SaG4n releases
 
 
 ## Installation
@@ -123,7 +124,7 @@ SaG4n has to be executed in this directory in order to get the outputs in the ri
 
 ### yields
 
-`inputs/examples/yields/`: there are several inputs to calculate the neutron yields and energy spectra originated by the Th-232 series in secular equilibrium in different materials. The resulting neutron yields should be similar to those presented in Table 3 of https://arxiv.org/abs/1906.03903
+`inputs/examples/yields/`: there are several inputs to calculate the neutron yields and energy spectra originated by the Th-232 series in secular equilibrium in different materials. The resulting neutron yields should be similar to those presented in Table 3 of https://doi.org/10.1016/j.nima.2020.163659
 
 To run each of these inputs, provided that the executable is located in `../build/SaG4n`:
 
@@ -136,6 +137,16 @@ To run each of these inputs, provided that the executable is located in `../buil
 ```
 
 Note: to save computing time, STEPMAX in these input examples has been set to 0.001 cm. For more accurate results (those reported in Table 3), STEPMAX has to be changed to 0.00001 cm.
+
+A simplified version of these inputs are also provided in the same folder: `yield01_v2.inp`, `yield02_v2.inp`, ..., `yield15_v2.inp`. There the materials and the source are defined in an easier way:
+
+```sh
+./build/SaG4n inputs/examples/yields/yield01_v2.inp
+./build/SaG4n inputs/examples/yields/yield02_v2.inp
+...
+```
+
+And the results must be the same as before.
 
 
 ### geometry
@@ -179,6 +190,28 @@ Again, to run them:
 ./build/SaG4n inputs/examples/components/cable_U238_mid.inp
 ./build/SaG4n inputs/examples/components/cable_Po210.inp
 ```
+
+### basic
+
+`inputs/examples/basic01/`: two types of inputs are provided
+
+- `concrete01.inp` and `concrete02.inp`: both are the same, but with the material (concrete) defined with mass fractions or with atom fractions. Results have to be the same.
+
+```sh
+./build/SaG4n inputs/examples/basic01/concrete01.inp
+./build/SaG4n inputs/examples/basic01/concrete02.inp
+```
+
+
+- `source01.inp`, `source02.inp`, `source03.inp` and `source04.inp`: they are the same input but with different sources. The results from `source01.inp` have to be the same as the sum of the results from `source02.inp`, `source03.inp` and `source04.inp`.
+
+```sh
+./build/SaG4n inputs/examples/basic01/source01.inp
+./build/SaG4n inputs/examples/basic01/source02.inp
+./build/SaG4n inputs/examples/basic01/source03.inp
+./build/SaG4n inputs/examples/basic01/source04.inp
+```
+
 
 ### decay series
 

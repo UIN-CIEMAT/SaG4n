@@ -200,7 +200,7 @@ void SaG4nEventAction::WriteResults(){
   if(OutputFormat==1){ // ASCII format 
     std::ofstream out(theInputManager->GetOutFname()+G4String(".txt"));
     if(!out.good()){
-      G4cout<<" ############ Error opening "<<theInputManager->GetOutFname()+G4String(".txt")<<" ############"<<G4endl; exit(1);
+      G4cout<<" ############ Error opening "<<theInputManager->GetOutFname()+G4String(".txt")<<" (please set the appropriate path in the OUTPUTFILE field of the input file) ############"<<G4endl; exit(1);
     }
     G4int CWidth=15;
     //----------------------------------------------------------------
@@ -235,7 +235,7 @@ void SaG4nEventAction::WriteResults(){
     G4AnalysisManager* theAnalysisManager=G4AnalysisManager::Instance();
     G4bool fileOpen=theAnalysisManager->OpenFile(theInputManager->GetOutFname()+G4String(".root"));
     if(!fileOpen){
-      G4cout<<" ############ Error opening "<<theInputManager->GetOutFname()+G4String(".root")<<" ############"<<G4endl; exit(1);
+      G4cout<<" ############ Error opening "<<theInputManager->GetOutFname()+G4String(".root")<<" (please set the appropriate path in the OUTPUTFILE field of the input file) ############"<<G4endl; exit(1);
     }
     //Neutron spectrum and alpha flux histograms:
     for(G4int i=0;i<NVolumes;i++){

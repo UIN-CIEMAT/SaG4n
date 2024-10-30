@@ -50,8 +50,9 @@ public:
   G4double GetSourceIntensity(G4int id){return SourceIntensity[id];}
 
 private:
-  G4Material* CreateMaterial(G4String MatName,G4int nIsotopes,G4double density,G4int* ZA,G4double* atomicfraction);
-
+  G4Material* CreateMaterialFromIsotopes(G4String MatName,G4int nIsotopes,G4double density,G4int* ZA,G4double* atomicfraction);
+  G4Material* CreateMaterialFromElements(G4String MatName,G4int nElements,G4double density,G4int* Element_Z,G4double* elementfraction); // if elementfraction[i]>0 then it is atom fraction; if elementfraction[i]<0 then it is mass fraction
+  void AddChainsToSource();
 
 private:
   G4String InputFname;
