@@ -12,6 +12,7 @@
 #include "G4SystemOfUnits.hh"
 #include "G4GenericBiasingPhysics.hh"
 #include "G4StepLimiterPhysics.hh"
+#include "G4ParticleHPManager.hh"
 
 #include "G4VisExecutive.hh"
 #include "G4UIExecutive.hh"
@@ -46,6 +47,15 @@ int main(int argc,char** argv){
 
   SaG4nActionInitialization* theActionInitialization=new SaG4nActionInitialization(theInputManager);
   runManager->SetUserInitialization(theActionInitialization);
+
+  // set HP physics variables (formerly environmental variables) as required by SaG4n; others are default values so commented out
+  G4ParticleHPManager::GetInstance()->SetSkipMissingIsotopes( true );
+  G4ParticleHPManager::GetInstance()->SetDoNotAdjustFinalState( true );
+  //G4ParticleHPManager::GetInstance()->SetUseOnlyPhotoEvaporation( false );
+  //G4ParticleHPManager::GetInstance()->SetNeglectDoppler( false );
+  //G4ParticleHPManager::GetInstance()->SetProduceFissionFragments( false );
+  //G4ParticleHPManager::GetInstance()->SetUseWendtFissionModel( false );
+  //G4ParticleHPManager::GetInstance()->SetUseNRESP71Model( false );
 
   runManager->Initialize();
 

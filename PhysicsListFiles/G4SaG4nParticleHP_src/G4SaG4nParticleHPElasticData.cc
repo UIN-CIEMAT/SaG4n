@@ -44,6 +44,7 @@
 #include "G4ElementTable.hh"
 #include "G4SaG4nParticleHPData.hh"
 #include "G4SaG4nParticleHPManager.hh"
+#include "G4HadronicParameters.hh"
 #include "G4Pow.hh"
 
 G4SaG4nParticleHPElasticData::G4SaG4nParticleHPElasticData()
@@ -53,7 +54,6 @@ G4SaG4nParticleHPElasticData::G4SaG4nParticleHPElasticData()
    SetMaxKinEnergy( 20*MeV );                                   
 
    theCrossSections = 0;
-   onFlightDB = true;
    instanceOfWorker = false;
    if ( G4Threading::IsWorkerThread() ) {
       instanceOfWorker = true;
@@ -120,14 +120,6 @@ void G4SaG4nParticleHPElasticData::BuildPhysicsTable(const G4ParticleDefinition&
   if(&aP!=G4Neutron::Neutron()) 
      throw G4HadronicException(__FILE__, __LINE__, "Attempt to use NeutronHP data for particles other than neutrons!!!");  
 
-//080428
-   if ( G4SaG4nParticleHPManager::GetInstance()->GetNeglectDoppler() ) 
-   {
-      G4cout << "Find a flag of \"G4NEUTRONHP_NEGLECT_DOPPLER\"." << G4endl;
-      G4cout << "On the fly Doppler broadening will be neglect in the cross section calculation of elastic scattering of neutrons (<20MeV)." << G4endl;
-      onFlightDB = false;
-   }
-
    if ( G4Threading::IsWorkerThread() ) {
       theCrossSections = G4SaG4nParticleHPManager::GetInstance()->GetElasticCrossSections();
       return;
@@ -159,6 +151,9 @@ void G4SaG4nParticleHPElasticData::DumpPhysicsTable(const G4ParticleDefinition& 
   if(&aP!=G4Neutron::Neutron()) 
      throw G4HadronicException(__FILE__, __LINE__, "Attempt to use NeutronHP data for particles other than neutrons!!!");  
 
+  #ifdef G4VERBOSE  
+  if ( G4HadronicParameters::Instance()->GetVerboseLevel() == 0 ) return;
+  
 //
 // Dump element based cross section
 // range 10e-5 eV to 20 MeV
@@ -200,8 +195,8 @@ void G4SaG4nParticleHPElasticData::DumpPhysicsTable(const G4ParticleDefinition& 
       G4cout << G4endl;
    }
 
-
-//  G4cout << "G4SaG4nParticleHPElasticData::DumpPhysicsTable still to be implemented"<<G4endl;
+   //G4cout << "G4SaG4nParticleHPElasticData::DumpPhysicsTable still to be implemented"<<G4endl;
+   #endif
 }
 
 #include "G4Nucleus.hh"
@@ -219,7 +214,7 @@ GetCrossSection(const G4DynamicParticle* aP, const G4Element*anE, G4double aT)
   // prepare neutron
   G4double eKinetic = aP->GetKineticEnergy();
 
-  if ( !onFlightDB )
+  if ( G4SaG4nParticleHPManager::GetInstance()->GetNeglectDoppler() )
   {
      //NEGLECT_DOPPLER_B.
      G4double factor = 1.0;

@@ -40,6 +40,7 @@
 #include "G4SaG4nParticleHPProduct.hh" 
 #include "G4Poisson.hh"
 #include "G4Proton.hh"
+#include "G4HadronicParameters.hh"
 
 G4int G4SaG4nParticleHPProduct::GetMultiplicity(G4double anEnergy )
 {
@@ -78,8 +79,11 @@ G4int G4SaG4nParticleHPProduct::GetMultiplicity(G4double anEnergy )
 	 multi = G4Poisson ( mean ); 
 #else 
        if( theMultiplicityMethod == G4HPMultiPoisson ) {
-	 multi = G4Poisson ( mean ); 	 
-	 if( getenv("G4PHPTEST") )  G4cout << " MULTIPLICITY MULTIPLIED " << multi << " " << theMassCode << G4endl;
+	 multi = G4Poisson ( mean );
+	 #ifdef G4VERBOSE
+	 if( std::getenv("G4PHPTEST") && G4HadronicParameters::Instance()->GetVerboseLevel() > 0 )
+	   G4cout << " MULTIPLICITY MULTIPLIED " << multi << " " << theMassCode << G4endl;
+	 #endif
        } else { // if( theMultiplicityMethod == G4HPMultiBetweenInts ) {
 	 G4double radnf = CLHEP::RandFlat::shoot();
 	 G4int imulti = G4int(mean);
@@ -92,7 +96,10 @@ G4int G4SaG4nParticleHPProduct::GetMultiplicity(G4double anEnergy )
 	//       if( CLHEP::RandFlat::shoot() > mean-multi ) multi++;
      }
 #ifdef G4PHPDEBUG
-     if( getenv("G4SaG4nParticleHPDebug") ) G4cout << "G4SaG4nParticleHPProduct::GetMultiplicity " << theMassCode << " " << theMass << " multi " << multi << " mean " << mean << G4endl;
+     #ifdef G4VERBOSE
+     if( std::getenv("G4SaG4nParticleHPDebug") && G4HadronicParameters::Instance()->GetVerboseLevel() > 0 )
+       G4cout << "G4SaG4nParticleHPProduct::GetMultiplicity " << theMassCode << " " << theMass << " multi " << multi << " mean " << mean << G4endl;
+     #endif
 #endif
   }
 
@@ -118,13 +125,19 @@ G4ReactionProductVector * G4SaG4nParticleHPProduct::Sample(G4double anEnergy, G4
   for(i=0;i<multi;i++)
   {
 #ifdef G4PHPDEBUG
- if( getenv("G4PHPTEST") )
-    if( getenv("G4SaG4nParticleHPDebug") && tmp != 0 )    G4cout << multi << " " << i << " @@@ G4SaG4nParticleHPProduct::Sample " << anEnergy << " Mass " << theMassCode << " " << theMass << G4endl;
+ if( std::getenv("G4PHPTEST") )
+    #ifdef G4VERBOSE
+    if( std::getenv("G4SaG4nParticleHPDebug") && tmp != 0 && G4HadronicParameters::Instance()->GetVerboseLevel() > 0 )
+      G4cout << multi << " " << i << " @@@ G4SaG4nParticleHPProduct::Sample " << anEnergy << " Mass " << theMassCode << " " << theMass << G4endl;
+    #endif
 #endif
     tmp = theDist->Sample(anEnergy, theMassCode, theMass);
     if(tmp != 0) { result->push_back(tmp); }
 #ifndef G4PHPDEBUG //GDEB
-    if( getenv("G4SaG4nParticleHPDebug") && tmp != 0 )   G4cout << multi << " " << i << " @@@ G4SaG4nParticleHPProduct::Sample " << tmp->GetDefinition()->GetParticleName() << " E= " << tmp->GetKineticEnergy() << G4endl; 
+    #ifdef G4VERBOSE
+    if( std::getenv("G4SaG4nParticleHPDebug") && tmp != 0 && G4HadronicParameters::Instance()->GetVerboseLevel() > 0 )
+      G4cout << multi << " " << i << " @@@ G4SaG4nParticleHPProduct::Sample " << tmp->GetDefinition()->GetParticleName() << " E= " << tmp->GetKineticEnergy() << G4endl;
+    #endif
 #endif
   }
   if(multi == 0) 

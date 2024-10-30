@@ -39,6 +39,7 @@
 #include "G4SaG4nParticleHPProduct.hh"
 #include "G4ReactionProduct.hh"
 #include "G4Cache.hh"
+#include "G4SaG4nParticleHPManager.hh"
 
 class G4ParticleDefinition;
 
@@ -67,7 +68,6 @@ public:
     targetMass = 0.0;
     frameFlag = 0;
     nProducts = 0;
-    bAdjustFinalState = true;
     hasPhotons=false;
   }
 
@@ -83,7 +83,6 @@ public:
     targetMass = 0.0;
     frameFlag = 0;
     nProducts = 0;
-    bAdjustFinalState = true;
     hasPhotons=false;
   }
 
@@ -94,19 +93,6 @@ public:
   
   inline void Init(std::istream & aDataFile)
   {
-    bAdjustFinalState = true;
-    const char* ctmp = getenv("G4PHP_DO_NOT_ADJUST_FINAL_STATE");
-    if( ctmp && G4String(ctmp) == "1" )
-    {
-      bAdjustFinalState = false;
-    }
-
-// T.K. Comment out following line to keep the condition at the
-// validation efforts comparing NeutronHP and PartileHP for neutrons (2015 Sep.)
-//#ifdef PHP_AS_HP
-//    bAdjustFinalState = false;
-//#endif
- 
     inCharge = true;
     aDataFile>>targetMass>>frameFlag>>nProducts;
     theProducts = new G4SaG4nParticleHPProduct[nProducts];
@@ -116,9 +102,9 @@ public:
       if(theProducts[i].GetMassCode()==0){hasPhotons=true;}
     }
   }
-  
-  G4bool HasPhotons(){return hasPhotons;}
 
+  G4bool HasPhotons(){return hasPhotons;}
+  
   G4ReactionProduct * SampleOne(G4double anEnergy);
 
   G4ReactionProductVector * Sample(G4double anEnergy);
@@ -168,7 +154,6 @@ private:
 
   G4ParticleDefinition* theProjectile;
 
-  G4bool bAdjustFinalState;
   G4bool hasPhotons;
 };
 

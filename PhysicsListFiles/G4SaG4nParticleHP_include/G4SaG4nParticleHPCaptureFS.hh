@@ -43,12 +43,7 @@ class G4SaG4nParticleHPCaptureFS : public G4SaG4nParticleHPFinalState
 {
   public:
   
-  G4SaG4nParticleHPCaptureFS()
-  {
-    hasXsec = false; 
-    hasExactMF6 = false;
-    targetMass = 0;
-  }
+  G4SaG4nParticleHPCaptureFS();
   
   ~G4SaG4nParticleHPCaptureFS()
   {

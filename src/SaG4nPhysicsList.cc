@@ -51,7 +51,7 @@ SaG4nPhysicsList::SaG4nPhysicsList()
   RegisterPhysics(new G4RadioactiveDecayPhysics(ver));
 
   //step limit
-  RegisterPhysics( new G4StepLimiterPhysics(ver) );
+  RegisterPhysics( new G4StepLimiterPhysics() );
 
   if(G4HadronicProcessStore::Instance()){
     G4HadronicProcessStore::Instance()->SetVerbose(0);

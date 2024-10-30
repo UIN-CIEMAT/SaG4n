@@ -26,6 +26,8 @@
 //
 // P. Arce, June-2014 Conversion neutron_hp to particle_hp
 //
+// June-2019 - E. Mendoza --> perform some corrections
+
 #ifndef G4SaG4nParticleHPKallbachMannSyst_h
 #define G4SaG4nParticleHPKallbachMannSyst_h 1
 

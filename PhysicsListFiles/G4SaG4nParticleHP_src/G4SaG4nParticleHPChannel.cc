@@ -33,6 +33,11 @@
 //
 // P. Arce, June-2014 Conversion neutron_hp to particle_hp
 //
+// June-2019 - E. Mendoza --> Modification to allow using an incomplete
+//   data library if the G4NEUTRONHP_SKIP_MISSING_ISOTOPES environmental
+//   flag is defined. The missing XS are set to 0.
+
+
 #include <stdlib.h>
 
 #include "G4SaG4nParticleHPChannel.hh"
@@ -41,23 +46,22 @@
 #include "G4SaG4nParticleHPFinalState.hh"
 #include "G4HadTmpUtil.hh"
 
-#include "G4SaG4nParticleHPManager.hh"
 #include "G4SaG4nParticleHPReactionWhiteBoard.hh"
 
-  G4double G4SaG4nParticleHPChannel::GetXsec(G4double energy)
-  {
-    return std::max(0., theChannelData->GetXsec(energy));
-  }
+G4double G4SaG4nParticleHPChannel::GetXsec(G4double energy)
+{
+  return std::max(0., theChannelData->GetXsec(energy));
+}
   
-  G4double G4SaG4nParticleHPChannel::GetWeightedXsec(G4double energy, G4int isoNumber)
-  {
-    return theIsotopeWiseData[isoNumber].GetXsec(energy);
-  }
+G4double G4SaG4nParticleHPChannel::GetWeightedXsec(G4double energy, G4int isoNumber)
+{
+  return theIsotopeWiseData[isoNumber].GetXsec(energy);
+}
   
-  G4double G4SaG4nParticleHPChannel::GetFSCrossSection(G4double energy, G4int isoNumber)
-  {
-    return theFinalStates[isoNumber]->GetXsec(energy);
-  }
+G4double G4SaG4nParticleHPChannel::GetFSCrossSection(G4double energy, G4int isoNumber)
+{
+  return theFinalStates[isoNumber]->GetXsec(energy);
+}
   
   void G4SaG4nParticleHPChannel::
   Init(G4Element * anElement, const G4String dirName, const G4String aFSType) 
@@ -229,7 +233,7 @@
     {
        //Inelastic Case
        //G4cout << "G4SaG4nParticleHPChannel Inelastic Case" 
-       //<< " Z= " << this->GetZ(anIsotope) << " A = " << this->GetN(anIsotope) << G4endl;
+       //<< " Z= " << this->GetZ(it) << " A = " << this->GetN(it) << G4endl;
        G4SaG4nParticleHPManager::GetInstance()->GetReactionWhiteBoard()->SetTargA( (G4int)this->GetN(anIsotope) ); 
        G4SaG4nParticleHPManager::GetInstance()->GetReactionWhiteBoard()->SetTargZ( (G4int)this->GetZ(anIsotope) ); 
        G4SaG4nParticleHPManager::GetInstance()->GetReactionWhiteBoard()->SetProjectileKineticEnergy(theTrack.GetKineticEnergy()); 

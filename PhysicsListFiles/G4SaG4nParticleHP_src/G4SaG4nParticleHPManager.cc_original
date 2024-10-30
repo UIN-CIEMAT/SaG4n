@@ -36,6 +36,7 @@
 #include "G4SaG4nParticleHPThreadLocalManager.hh"
 #include "G4SaG4nParticleHPMessenger.hh"
 #include "G4HadronicException.hh"
+#include "G4Exception.hh"
 
 G4SaG4nParticleHPManager* G4SaG4nParticleHPManager::instance = 0;
 
@@ -46,6 +47,7 @@ G4SaG4nParticleHPManager::G4SaG4nParticleHPManager()
 ,NEGLECT_DOPPLER(false)
 ,DO_NOT_ADJUST_FINAL_STATE(false)
 ,PRODUCE_FISSION_FRAGMENTS(false)
+,USE_WENDT_FISSION_MODEL(false)
 ,USE_NRESP71_MODEL(false)
 ,theElasticCrossSections(0)
 ,theCaptureCrossSections(0)
@@ -61,12 +63,6 @@ G4SaG4nParticleHPManager::G4SaG4nParticleHPManager()
 ,theTSInelasticFinalStates(0)
 {
    messenger = new G4SaG4nParticleHPMessenger( this );
-   if ( getenv( "G4NEUTRONHP_DO_NOT_ADJUST_FINAL_STATE" ) || getenv("G4PHP_DO_NOT_ADJUST_FINAL_STATE") ) DO_NOT_ADJUST_FINAL_STATE = true;
-   if ( getenv( "G4NEUTRONHP_USE_ONLY_PHOTONEVAPORATION" ) ) USE_ONLY_PHOTONEVAPORATION = true;
-   if ( getenv( "G4NEUTRONHP_NEGLECT_DOPPLER" ) || getenv("G4PHP_NEGLECT_DOPPLER") ) NEGLECT_DOPPLER = true;
-   if ( getenv( "G4NEUTRONHP_SKIP_MISSING_ISOTOPES" ) ) SKIP_MISSING_ISOTOPES = true;
-   if ( getenv( "G4NEUTRONHP_PRODUCE_FISSION_FRAGMENTS" ) ) PRODUCE_FISSION_FRAGMENTS = true;
-   if ( getenv( "G4PHP_USE_NRESP71_MODEL" ) ) USE_NRESP71_MODEL = true;
 }
 
 G4SaG4nParticleHPManager::~G4SaG4nParticleHPManager()
@@ -254,4 +250,21 @@ std::vector<G4SaG4nParticleHPChannelList*>* G4SaG4nParticleHPManager::GetInelast
 void G4SaG4nParticleHPManager::RegisterInelasticFinalStates( const G4ParticleDefinition* particle , std::vector<G4SaG4nParticleHPChannelList*>* val )
 {
    theInelasticFSs.insert ( std::pair<const G4ParticleDefinition*,std::vector<G4SaG4nParticleHPChannelList*>*>( particle , val ) ); 
+}
+
+
+void G4SaG4nParticleHPManager::DumpSetting() {
+  G4cout << G4endl
+         << "=======================================================" << G4endl
+         << "======       ParticleHP Physics Parameters     ========" << G4endl
+         << "=======================================================" << G4endl
+         << " UseOnlyPhotoEvaporation ? " << USE_ONLY_PHOTONEVAPORATION << G4endl
+         << " SkipMissingIsotopes ?     " << SKIP_MISSING_ISOTOPES << G4endl
+         << " NeglectDoppler ?          " << NEGLECT_DOPPLER << G4endl
+         << " DoNotAdjustFinalState ?   " << DO_NOT_ADJUST_FINAL_STATE << G4endl
+         << " ProduceFissionFragments ? " << PRODUCE_FISSION_FRAGMENTS << G4endl
+         << " UseWendtFissionModel ?    " << USE_WENDT_FISSION_MODEL << G4endl
+         << " UseNRESP71Model ?         " << USE_NRESP71_MODEL << G4endl
+         << "=======================================================" << G4endl
+         << G4endl;
 }

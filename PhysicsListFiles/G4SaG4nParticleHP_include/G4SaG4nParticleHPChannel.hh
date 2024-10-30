@@ -23,11 +23,9 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-//
-//
- // Hadronic Process: Very Low Energy Neutron X-Sections
- // original by H.P. Wellisch, TRIUMF, 14-Feb-97
- // Builds and has the Cross-section data for one element and channel.
+// Hadronic Process: Very Low Energy Neutron X-Sections
+// original by H.P. Wellisch, TRIUMF, 14-Feb-97
+// Builds and has the Cross-section data for one element and channel.
 //
 // Bug fixes and workarounds in the destructor, F.W.Jones 06-Jul-1999
 // 070612 Fix memory leaking by T. Koi
@@ -38,29 +36,34 @@
 //
 #ifndef G4SaG4nParticleHPChannel_h
 #define G4SaG4nParticleHPChannel_h 1
+
 #include "globals.hh"
 #include "G4SaG4nParticleHPIsoData.hh"
 #include "G4SaG4nParticleHPVector.hh"
 #include "G4Material.hh"
 #include "G4HadProjectile.hh"
-//#include "G4NeutronInelasticProcess.hh"
-//#include "G4HadronFissionProcess.hh"
-//#include "G4HadronElasticProcess.hh"
-//#include "G4HadronCaptureProcess.hh"
 #include "G4StableIsotopes.hh"
 #include "G4SaG4nParticleHPCaptureFS.hh"
 #include "G4SaG4nParticleHPFinalState.hh"
 #include "G4Element.hh"
 #include "G4WendtFissionFragmentGenerator.hh"
+#include "G4SaG4nParticleHPManager.hh"
+
 class G4ParticleDefinition;
+
 
 class G4SaG4nParticleHPChannel
 {
 public:
 
-  G4SaG4nParticleHPChannel(G4ParticleDefinition* projectile)
-  : wendtFissionGenerator(getenv("G4NEUTRON_HP_USE_WENDT_FISSION_MODEL") == NULL ? NULL : G4WendtFissionFragmentGenerator::GetInstance())
+  G4SaG4nParticleHPChannel(G4ParticleDefinition* projectile) :
+    wendtFissionGenerator( G4SaG4nParticleHPManager::GetInstance()->GetUseWendtFissionModel() ?
+			   G4WendtFissionFragmentGenerator::GetInstance() : nullptr )
   {
+    if ( G4SaG4nParticleHPManager::GetInstance()->GetUseWendtFissionModel() ) {
+      // Make sure both fission fragment models are not active at same time
+      G4SaG4nParticleHPManager::GetInstance()->SetProduceFissionFragments( false );
+    }
     theProjectile = const_cast<G4ParticleDefinition*>(projectile);
     theChannelData = new G4SaG4nParticleHPVector; 
     theBuffer = 0;
@@ -72,9 +75,13 @@ public:
     theElement = NULL;
   }
 
-  G4SaG4nParticleHPChannel()
-  : wendtFissionGenerator(getenv("G4NEUTRON_HP_USE_WENDT_FISSION_MODEL") == NULL ? NULL : G4WendtFissionFragmentGenerator::GetInstance())
+  G4SaG4nParticleHPChannel() : wendtFissionGenerator( G4SaG4nParticleHPManager::GetInstance()->GetUseWendtFissionModel() ?
+						 G4WendtFissionFragmentGenerator::GetInstance() : nullptr )
   {
+    if ( G4SaG4nParticleHPManager::GetInstance()->GetUseWendtFissionModel() ) {
+      // Make sure both fission fragment models are not active at same time
+      G4SaG4nParticleHPManager::GetInstance()->SetProduceFissionFragments( false );
+    }
     theProjectile = G4Neutron::Neutron();
     theChannelData = new G4SaG4nParticleHPVector; 
     theBuffer = 0;
@@ -106,17 +113,16 @@ public:
     //}
     // FWJ experiment
     //if(active!=0) delete [] active;
-// T.K. 
-   if ( theFinalStates != 0 )
-   {
+    // T.K. 
+    if ( theFinalStates != 0 )
+    {
       for ( G4int i = 0 ; i < niso ; i++ )
       {
          delete theFinalStates[i];
       }
       delete [] theFinalStates;
-   }
-   if ( active != 0 ) delete [] active;
-    
+    }
+    if ( active != 0 ) delete [] active;
   }
   
   G4double GetXsec(G4double energy);

@@ -39,14 +39,7 @@ class G4SaG4nParticleHPDataPoint
   G4SaG4nParticleHPDataPoint(){energy = 0; xSec = 0;}
   G4SaG4nParticleHPDataPoint(G4double e, G4double x){ energy = e; xSec = x;}
   
-  void operator= (const G4SaG4nParticleHPDataPoint & aSet)
-  {
-    if(&aSet!=this)
-    {
-      energy = aSet.GetEnergy();
-      xSec   = aSet.GetXsection();
-    }
-  }
+  G4SaG4nParticleHPDataPoint & operator= (const G4SaG4nParticleHPDataPoint & aSet) = default;
 
 //  ~G4SaG4nParticleHPDataPoint(){}
   

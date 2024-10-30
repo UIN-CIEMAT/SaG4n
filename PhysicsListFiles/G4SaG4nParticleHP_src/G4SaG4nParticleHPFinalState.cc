@@ -43,10 +43,6 @@
 #include "G4He3.hh"
 #include "G4Alpha.hh"
 
-G4bool G4SaG4nParticleHPFinalState::DoNotAdjustFinalState()
-{
-   return !G4SaG4nParticleHPManager::GetInstance()->GetDoNotAdjustFinalState();
-}
 
 void G4SaG4nParticleHPFinalState::adjust_final_state ( G4LorentzVector init_4p_lab )
 {
@@ -71,7 +67,7 @@ void G4SaG4nParticleHPFinalState::adjust_final_state ( G4LorentzVector init_4p_l
       max_SecA = std::max ( max_SecA , theResult.Get()->GetSecondary( i )->GetParticle()->GetDefinition()->GetAtomicMass() );
       if ( theResult.Get()->GetSecondary( i )->GetParticle()->GetDefinition()->GetAtomicMass() == max_SecA ) imaxA = i;
 #ifdef G4PHPDEBUG
-      if( getenv("G4SaG4nParticleHPDebug"))    G4cout << "G4SaG4nParticleHPFinalState::adjust_final_stat SECO " << i << " " <<theResult.Get()->GetSecondary( i )->GetParticle()->GetDefinition()->GetParticleName() << G4endl;
+      if( std::getenv("G4SaG4nParticleHPDebug"))    G4cout << "G4SaG4nParticleHPFinalState::adjust_final_stat SECO " << i << " " <<theResult.Get()->GetSecondary( i )->GetParticle()->GetDefinition()->GetParticleName() << G4endl;
 #endif
 
    }
@@ -100,7 +96,7 @@ void G4SaG4nParticleHPFinalState::adjust_final_state ( G4LorentzVector init_4p_l
    }
 
 #ifdef G4PHPDEBUG
-   if( getenv("G4SaG4nParticleHPDebug")) G4cout  << "G4SaG4nParticleHPFinalState::adjust_final_stat  BaseZ " << baseZNew << " BaseA " << baseANew << " sum_Z " << sum_Z << " sum_A " << sum_A << G4endl;
+   if( std::getenv("G4SaG4nParticleHPDebug")) G4cout  << "G4SaG4nParticleHPFinalState::adjust_final_stat  BaseZ " << baseZNew << " BaseA " << baseANew << " sum_Z " << sum_Z << " sum_A " << sum_A << G4endl;
 #endif
 
    G4bool needOneMoreSec = false;
@@ -135,7 +131,7 @@ void G4SaG4nParticleHPFinalState::adjust_final_state ( G4LorentzVector init_4p_l
          else 
          {
 #ifdef G4PHPDEBUG
-	   if( getenv("G4SaG4nParticleHPDebug")) G4cout << this << "G4SaG4nParticleHPFinalState oneMoreSec_pd Z " << baseZNew << " - " << sum_Z << " A " << baseANew << " - " << sum_A << " projectile " << theProjectile->GetParticleName() << G4endl;
+	   if( std::getenv("G4SaG4nParticleHPDebug")) G4cout << this << "G4SaG4nParticleHPFinalState oneMoreSec_pd Z " << baseZNew << " - " << sum_Z << " A " << baseANew << " - " << sum_A << " projectile " << theProjectile->GetParticleName() << G4endl;
 #endif
 	   oneMoreSec_pd = G4IonTable::GetIonTable()->GetIon ( int(baseZNew - sum_Z) , (int)(baseANew - sum_A) , 0.0 );
 	   if( !oneMoreSec_pd ) {
@@ -276,7 +272,7 @@ void G4SaG4nParticleHPFinalState::adjust_final_state ( G4LorentzVector init_4p_l
       nSecondaries += 1;
 
       G4DynamicParticle* res = new G4DynamicParticle ( resi_pd , dif_4p.v() );    
-      theResult.Get()->AddSecondary ( res );    
+      theResult.Get()->AddSecondary ( res, secID );    
 
       p4 = res->Get4Momentum(); 
       if ( slow > p4.beta() ) 
@@ -297,7 +293,7 @@ void G4SaG4nParticleHPFinalState::adjust_final_state ( G4LorentzVector init_4p_l
    {
       nSecondaries += 1;
       G4DynamicParticle* one = new G4DynamicParticle ( oneMoreSec_pd , dif_4p.v() );    
-      theResult.Get()->AddSecondary ( one );    
+      theResult.Get()->AddSecondary ( one, secID );    
       p4 = one->Get4Momentum(); 
       if ( slow > p4.beta() ) 
       {
@@ -318,7 +314,7 @@ void G4SaG4nParticleHPFinalState::adjust_final_state ( G4LorentzVector init_4p_l
       {
 
          nSecondaries += 1;
-         theResult.Get()->AddSecondary ( new G4DynamicParticle ( G4Gamma::Gamma() , dif_4p.v() ) );    
+         theResult.Get()->AddSecondary ( new G4DynamicParticle ( G4Gamma::Gamma() , dif_4p.v() ), secID );    
 
       }
       else
@@ -360,8 +356,8 @@ void G4SaG4nParticleHPFinalState::adjust_final_state ( G4LorentzVector init_4p_l
          G4ThreeVector dir( std::sin(std::acos(costh))*std::cos(phi), 
                             std::sin(std::acos(costh))*std::sin(phi),
                             costh);
-         theResult.Get()->AddSecondary ( new G4DynamicParticle ( G4Gamma::Gamma() , e1*dir ) );    
-         theResult.Get()->AddSecondary ( new G4DynamicParticle ( G4Gamma::Gamma() , -e1*dir ) );    
+         theResult.Get()->AddSecondary ( new G4DynamicParticle ( G4Gamma::Gamma() , e1*dir ),  secID );    
+         theResult.Get()->AddSecondary ( new G4DynamicParticle ( G4Gamma::Gamma() , -e1*dir ), secID );    
       }
       else
       {

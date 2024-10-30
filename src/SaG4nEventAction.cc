@@ -3,6 +3,7 @@
 #include "G4SystemOfUnits.hh"
 #include "Randomize.hh"
 #include "G4RunManager.hh"
+#include "G4AnalysisManager.hh"
 
 
 SaG4nEventAction:: SaG4nEventAction(SaG4nInputManager* anInputManager){
@@ -280,7 +281,7 @@ void SaG4nEventAction::WriteResults(){
     }
     theAnalysisManager->Write();
     theAnalysisManager->CloseFile();
-    delete theAnalysisManager;
+    //delete theAnalysisManager;  not needed in Geant4 11.0.0 - G4AnalysisManager takes care of it automatically
     //----------------------------------------------------------------
   }
   else{

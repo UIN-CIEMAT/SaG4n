@@ -5,7 +5,7 @@
 #include "G4UserEventAction.hh"
 #include "globals.hh"
 #include <ctime>
-#include "g4root.hh"
+//#include "g4root.hh"
 #include "SaG4nInputManager.hh"
 
 class SaG4nEventAction : public G4UserEventAction

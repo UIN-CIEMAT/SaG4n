@@ -65,5 +65,7 @@ private:
     G4SaG4nParticleHPNames fileNames;
 
     G4int Verbosity_;
+  
+    G4int secID;  // Creator model ID for the fission fragments
 };
 #endif

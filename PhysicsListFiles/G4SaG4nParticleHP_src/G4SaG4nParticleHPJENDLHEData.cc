@@ -33,7 +33,7 @@
 //
 #include "G4SaG4nParticleHPJENDLHEData.hh"
 #include "G4SystemOfUnits.hh"
-#include "G4LPhysicsFreeVector.hh"
+#include "G4PhysicsFreeVector.hh"
 #include "G4ElementTable.hh"
 #include "G4SaG4nParticleHPData.hh"
 #include "G4Pow.hh"
@@ -104,7 +104,7 @@ void G4SaG4nParticleHPJENDLHEData::BuildPhysicsTable( const G4ParticleDefinition
 //      throw G4HadronicException(__FILE__, __LINE__, "Attempt to use NeutronHP data for particles other than neutrons!!!");  
    particleName = aP.GetParticleName();
 
-   G4String baseName = getenv( "G4NEUTRONHPDATA" );
+   G4String baseName = std::getenv( "G4NEUTRONHPDATA" );
    G4String dirName = baseName+"/JENDL_HE/"+particleName+"/"+reactionName ;
    G4String aFSType = "/CrossSection/";
    G4SaG4nParticleHPNames theNames; 
@@ -318,7 +318,7 @@ G4PhysicsVector* G4SaG4nParticleHPJENDLHEData::readAFile ( std::fstream* file )
       v_xs.push_back( xs*barn );
    }
 
-   G4LPhysicsFreeVector* aPhysVec = new G4LPhysicsFreeVector( static_cast< size_t >( len ) , v_e.front() , v_e.back() );
+   G4PhysicsFreeVector* aPhysVec = new G4PhysicsFreeVector( static_cast< size_t >( len ) , v_e.front() , v_e.back() );
 
    for ( G4int i = 0 ; i < len ; i++ )
    {

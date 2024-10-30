@@ -31,6 +31,8 @@
 //
 // P. Arce, June-2014 Conversion neutron_hp to particle_hp
 //
+// June-2019 - E. Mendoza --> perform some corrections
+
 #include "G4SaG4nParticleHPKallbachMannSyst.hh" 
 #include "G4SystemOfUnits.hh"
 #include "Randomize.hh" 
@@ -52,13 +54,6 @@ G4double G4SaG4nParticleHPKallbachMannSyst::Sample(G4double anEnergy)
   if(upper>max) max=upper;
   if(lower>max) max=lower;
   G4double value, random;
-
-  //---------------------
-  //G4cout<<anEnergy<<"  "<<upper<<"  "<<zero<<"  "<<lower<<G4endl; getchar();
-  //theProductEnergy=3*MeV;
-  //G4cout<<" ProjectileZA="<<theProjectileA+1000*theProjectileZ<<"  Product ZA="<<theProductA+1000*theProductZ<<G4endl;
-  //G4cout<<"a("<<anEnergy<<","<<theProductEnergy<<")="<<A(anEnergy)<<G4endl; getchar();
-  //---------------------
 
   G4int icounter=0;
   G4int icounter_max=1024;
@@ -127,36 +122,11 @@ G4double G4SaG4nParticleHPKallbachMannSyst::A(G4double anEnergy)
   G4double R3 = std::min(ea, Et3);
   G4double X3 = R3*eb/ea;
 
-  //G4cout<<" Sa="<<SeparationEnergy(Ac, Nc, AA, ZA,theProjectileA,theProjectileZ)<<", Sb="<<SeparationEnergy(Ac, Nc, AB, ZB,theProductA, theProductZ )<<"  epsa="<<epsa<<"  epsb="<<epsb<<"  C1="<<C1<<" C2="<<C2<<" X1="<<X1<<G4endl;
-  //G4cout<<" R1="<<R1<<" ea = "<<ea<<" eb = "<<eb<<G4endl;
-  //--------------------------
-  /*
-  G4double Ma = 1;
-  G4double mb(0);
-  G4int productA = theTargetA+1-theResidualA;
-  G4int productZ = theTargetZ-theResidualZ;
-  if(productZ==0)
-  {
-    mb = 0.5;
-  }
-  else if(productZ==1)
-  {
-    mb = 1;
-  }
-  else if(productZ==2)
-  {
-    mb = 2;
-    if(productA==3) mb=1;
-  }
-  else
-  {
-    throw G4HadronicException(__FILE__, __LINE__, "Severe error in the sampling of Kallbach-Mann Systematics");
-  }
-  */
   G4double Ma=1;
   G4double mb=1;
   if(theProjectileA==1 || (theProjectileZ==1 && theProjectileA==2)){Ma=1;}//neutron,proton,deuteron
   else if(theProjectileA==4 && theProjectileZ==2){Ma=0;}//alpha
+  else if(theProjectileA==3 && (theProjectileZ==1 || theProjectileZ==2)){Ma=0.5;}//tritum,He3 : set intermediate value
   else
   {
     throw G4HadronicException(__FILE__, __LINE__, "Severe error in the sampling of Kallbach-Mann Systematics");
@@ -164,12 +134,10 @@ G4double G4SaG4nParticleHPKallbachMannSyst::A(G4double anEnergy)
   if(theProductA==1 && theProductZ==0){mb=1./2.;}//neutron
   else if(theProductA==4 && theProductZ==2){mb=2;}//alpha
   else{mb=1;}
-  //--------------------------
-
-
 
   result = C1*X1 + C2*G4Pow::GetInstance()->powN(X1, 3) + C3*Ma*mb*G4Pow::GetInstance()->powN(X3, 4);
   return result;
+
 }
 
 G4double G4SaG4nParticleHPKallbachMannSyst::SeparationEnergy(G4int Ac, G4int Nc, G4int AA, G4int ZA,G4int Abinding,G4int Zbinding)

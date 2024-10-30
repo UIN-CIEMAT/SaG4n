@@ -32,6 +32,12 @@
 #include "G4SaG4nParticleHP3NPInelasticFS.hh"
 #include "G4Nucleus.hh"
 #include "G4Proton.hh"
+#include "G4PhysicsModelCatalog.hh"
+
+G4SaG4nParticleHP3NPInelasticFS::G4SaG4nParticleHP3NPInelasticFS()
+{
+  secID = G4PhysicsModelCatalog::GetModelID( "model_G4SaG4nParticleHP3NPInelasticFS_F20" );
+}
 
 G4HadFinalState * G4SaG4nParticleHP3NPInelasticFS::ApplyYourself(const G4HadProjectile & theTrack)
 {
