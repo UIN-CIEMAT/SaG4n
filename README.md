@@ -30,6 +30,7 @@ SaG4n is a Geant4 tool developed to calculate neutron production due to (alpha,x
 
 The SaG4n code, together with different (alpha,xn) data libraries can be downloaded from the present webpage. Documentation concerning how the code works and how to use it is provided as well.
 
+
 ## Directories
 
 - `CMakeLists.txt`: needed to compie SaG4n
@@ -107,9 +108,7 @@ export G4PARTICLEHPDATA=/pathtoyourdatalibraries/ENDFLIBING4FORMAT
 Where ENDFLIBING4FORMAT must be one of the (alpha,xn) cross section data libraries (TENDL, JENDL ...) available for download (see previous section).
 
 
-
 ## Examples
-
 
 Some input examples are distributed together with the code. They are located inside the inputs/examples directory. Outputs generated with SaG4n using these inputs can be found in `outputs/examples_reference/`. They have been generated using Geant4.10.6.0 and the JENDLTENDL01 data library.
 
