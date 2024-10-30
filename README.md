@@ -78,7 +78,7 @@ The following libraries are available for download:
 
 - JENDL/AN-2005_noSec01. This is the same as JENDL/AN-2005, but the data tables concerning the energy-angular distributions of the neutrons from (alpha,n) reactions (MT=4) on Li-6, Li-7, B-10, B-11, C-13, N-14, N-15, O-17 and O-18 have been removed. These energy-angular distributions are then computed by Geant4 from the information of the excited state of the residual nucleus (information provided by the library). An isotropic neutron angular distribution in the center-of-mass system is assumed, and the energy of the emitted neutrons is obtained from two-body kinematics. This library can be downloaded from: https://cernbox.cern.ch/s/4g1JQ7Ru9YE9QbE
 
-- JENDLTENDL01 (recommended). This is the TENDL-2017 library, in which the 17 isotopes of JENDL/AN-2005 have been replaced with those of the JENDL/AN-2005_noSec01 library. This library can be downloaded from: https://cernbox.cern.ch/s/JBBzfqj4RVFjxL7
+- JENDLTENDL01 (**recommended**). This is the TENDL-2017 library, in which the 17 isotopes of JENDL/AN-2005 have been replaced with those of the JENDL/AN-2005_noSec01 library. This library can be downloaded from: https://cernbox.cern.ch/s/JBBzfqj4RVFjxL7
 
 
 The users have to first download the library they want to use, uncompress it in any folder, and set the G4PARTICLEHPDATA environmental variable to the full path where is placed the (alpha,xn) data library. For example:
