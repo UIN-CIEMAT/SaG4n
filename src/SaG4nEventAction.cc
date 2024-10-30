@@ -15,6 +15,7 @@ SaG4nEventAction:: SaG4nEventAction(SaG4nInputManager* anInputManager){
   NormFactor=1;
   H_NBins=1000;
   H_MaxEne=20*MeV;
+  NextPrint_minutes=1;
   for(G4int i=0;i<G4AN_MAXNVOLUMES;i++){
     NeutronSpectra_OneEvent[i]=0;
     AlphaFlux_OneEvent[i]=0;
@@ -49,6 +50,7 @@ SaG4nEventAction::~SaG4nEventAction(){
 
 void  SaG4nEventAction::BeginOfEventAction(const G4Event*){
 
+if(NEvents==0){starttime=time(NULL);}
   NEvents++;
   Init();
   if(OutputType1==0){return;} //No histograms
@@ -70,6 +72,14 @@ void  SaG4nEventAction::BeginOfEventAction(const G4Event*){
 
 void  SaG4nEventAction::EndOfEventAction(const G4Event*){
 
+  //-------------------------------------------------------------
+  //Pint progress:
+  double CompTime=difftime(time(NULL),starttime)/60.; //minutes
+  if(CompTime>NextPrint_minutes){
+    PrintProgress();
+    NextPrint_minutes*=2;
+  }
+  //-------------------------------------------------------------
 
   if(OutputType1==0){return;} //No histograms
 
@@ -320,7 +330,15 @@ void SaG4nEventAction::Init(){
 
 
 
+void SaG4nEventAction::PrintProgress(){
 
+  double CompTime=difftime(time(NULL),starttime)/60.; //minutes
+  G4int TotalNEvents=theInputManager->GetNEvents();
+
+  G4cout<<" #### PROGRESS: "<<NEvents<<"/"<<TotalNEvents<<" run histories have been computed ("<<NEvents*100./TotalNEvents<<" %) in "<<CompTime<<" minutes ("<<CompTime/60.<<" h) ---> ("<<NEvents*60./CompTime<<" run histories/h) ####"<<G4endl;
+  G4cout<<" #### Estimated time left to complete the job ("<<theInputManager->GetInputFname()<<"): "<<CompTime*(TotalNEvents-NEvents)/(G4double)NEvents<<" minutes ("<<CompTime*(TotalNEvents-NEvents)/(G4double)NEvents*1/60.<<" h) ####"<<G4endl;
+  
+}
 
 
 

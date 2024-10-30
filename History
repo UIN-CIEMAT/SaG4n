@@ -1,5 +1,20 @@
 
 
+================================================================================
+                               January 2021
+--------------------------------------------------------------------------------
+E. Mendoza
+  - SaG4n.01.02
+     + Materials can be now defined using the Geant4 material database.
+     + A bug in the code has been corrected: the absolute value of the alpha
+     particle flux is volumes with daughter volumes inside were not properly
+     calculated. There was a bug in the calculation of the volume size in these
+     cases.
+     + Now the source can be emitted in a certain fixed direction, in addition
+     to the isotropic emission. The energies of the source alpha particles can
+     be widened according to a Gaussian distribution as well.
+     + Information concerning the progress of the job is now printed regularly.
+================================================================================
 
 
 ================================================================================

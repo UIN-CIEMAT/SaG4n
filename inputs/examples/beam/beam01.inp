@@ -1,0 +1,61 @@
+
+
+################################################################################
+###                               GEOMETRY                                   ###
+################################################################################
+
+WORLDSIZE 1000 # OPTIONAL
+
+# VOLUMES: 
+# A disk made of material 1, with 3 cm radius and 1 cm in lengh:
+VOLUME 1 Sample01 1 3 0 - 3 1  0 0 1
+
+# MATERIALS:
+MATERIAL 1 G4_Al 999 -1
+
+# ALTERNATIVE MATERIAL DEFINITION 1:
+# MATERIAL 1 Al 2.699 1
+# 13 1
+# ENDMATERIAL
+
+# ALTERNATIVE MATERIAL DEFINITION 2:
+# MATERIAL 1 Al 2.699 1
+# 13027 1
+# ENDMATERIAL
+
+################################################################################
+###                                SOURCE                                    ###
+################################################################################
+
+SOURCE -1 0 0 -1 0 0 1 2 0.7
+1.00 1
+TenMeVAlpha 10 1 0.5
+ENDSOURCE
+
+################################################################################
+###                                PHYSICS                                   ###
+################################################################################
+
+MAXSTEPSIZE 0.001     # OPTIONAL
+BIASFACTOR 1000   # OPTIONAL
+
+################################################################################
+###                                OTHER                                     ###
+################################################################################
+
+NEVENTS 10000       # OPTIONAL
+OUTPUTFILE ./outputs/examples/beam/beam01 # without the extension
+OUTPUTTYPE 1 1 2 #OPTIONAL
+
+# if defined, interactive running mode:
+# INTERACTIVE
+
+# if defined, secondary particles are not killed when created:
+# DONOTKILLSECONDARIES
+
+# New seed for the MC (default is 1234567):
+# SEED 1234567 #OPTIONAL
+
+
+END
+

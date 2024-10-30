@@ -31,9 +31,11 @@ private:
   G4int SourcePostType,NSourcePosParameters;
   G4double SourcePosParameters[100];
   G4double TrX,TrY,TrZ;
+  G4double dir_ux,dir_uy,dir_uz;
   G4double SourceNormFactor;
   G4int NSourceEnergies;
   G4double* SourceEnergy;
+  G4double* SourceSigma;
   G4double* SourceCumulProb;
 
 

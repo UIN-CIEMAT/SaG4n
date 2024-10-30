@@ -18,6 +18,7 @@ SaG4nPrimaryGeneratorAction::SaG4nPrimaryGeneratorAction(SaG4nInputManager* anIn
   fParticleGun->SetParticleDefinition(particle);
   AlreadyInit=false;
   TrX=0; TrY=0; TrZ=0;
+  dir_ux=0; dir_uy=0; dir_uz=1;
 }
 
 
@@ -37,7 +38,12 @@ void SaG4nPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
   G4double rand=G4UniformRand();
   for(G4int i=0;i<NSourceEnergies;i++){
     if(rand<=SourceCumulProb[i]){
-      parEnergy=SourceEnergy[i];
+      if(SourceSigma[i]>0){
+	parEnergy=G4RandGauss::shoot(SourceEnergy[i],SourceSigma[i]);
+      }
+      else{
+	parEnergy=SourceEnergy[i];
+      }
       break;
     }
   }
@@ -48,7 +54,25 @@ void SaG4nPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
   //-----------------------------------------------------------------
   //Position:
   G4double Xpos=0,Ypos=0,Zpos=0,Xpos0=0,Ypos0=0,Zpos0=0;
-  if(SourcePostType==1){ // Sphere - Radius, VX, VY, VZ 
+  if(SourcePostType==-1){ //beam mode
+    G4double PosRad=SourcePosParameters[6];
+    G4double PosSigma=SourcePosParameters[7];
+    if(PosSigma<=0){//uniform in a disk with radius r
+      G4double radius=PosRad*sqrt(G4UniformRand()); //uniform
+      G4double phi = 2.*3.1415926*G4UniformRand();
+      Xpos0=radius*cos(phi);
+      Ypos0=radius*sin(phi);
+      Zpos0=0;
+    }
+    else{//gaussian
+      do{
+        Xpos0=G4RandGauss::shoot(0.,PosSigma);
+        Ypos0=G4RandGauss::shoot(0.,PosSigma);
+      }while(Xpos0*Xpos0+Ypos0*Ypos0>PosRad*PosRad);
+      Zpos0=0;
+    }
+  }
+  else if(SourcePostType==1){ // Sphere - Radius, VX, VY, VZ 
     G4double radius=SourcePosParameters[0]*pow(G4UniformRand(),1./3.);
     G4double phi = 2.*3.1415926*G4UniformRand();
     G4double costheta = 1-2.*G4UniformRand();
@@ -79,14 +103,19 @@ void SaG4nPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
   fParticleGun->SetParticlePosition(G4ThreeVector(Xpos,Ypos,Zpos));
   //-----------------------------------------------------------------
 
-
   //-----------------------------------------------------------------
   //Momentum direction:
-  G4double phi = 2.*3.1415926*G4UniformRand();
-  G4double costheta = 1-2.*G4UniformRand();
-  G4double sintheta=sqrt(1.-costheta*costheta);
-  G4ThreeVector sourcedirection(cos(phi)*sintheta,sin(phi)*sintheta,costheta);
-  fParticleGun->SetParticleMomentumDirection(sourcedirection);
+  if(SourcePostType==-1){ //beam mode
+    G4ThreeVector sourcedirection(dir_ux,dir_uy,dir_uz);
+   fParticleGun->SetParticleMomentumDirection(sourcedirection);
+  }
+  else{ //isotropic source
+    G4double phi = 2.*3.1415926*G4UniformRand();
+    G4double costheta = 1-2.*G4UniformRand();
+    G4double sintheta=sqrt(1.-costheta*costheta);
+    G4ThreeVector sourcedirection(cos(phi)*sintheta,sin(phi)*sintheta,costheta);
+    fParticleGun->SetParticleMomentumDirection(sourcedirection);
+  }
   //-----------------------------------------------------------------
 
   fParticleGun->GeneratePrimaryVertex(anEvent);
@@ -101,12 +130,21 @@ void SaG4nPrimaryGeneratorAction::Init(){
   theInputManager->ReadInput();
 
   //==========================================================================================================
-  // Position: SourcePostType=0 means uniformly distributed in a volume
+  // Position: SourcePostType=-1 --> "beam mode"
+  //           SourcePostType=0 means uniformly distributed in a volume
   //           SourcePostType=1,2,3 --> means uniformly distributed in a spehere, parallelepiped, cylinder
   SourcePostType=theInputManager->GetSourcePostType();
 
   //---------------------------------------------------------------------------------------
-  if(SourcePostType==0){ //then the source is uniformly distributed in a volume 
+  if(SourcePostType==-1){ //beam mode
+    NSourcePosParameters=theInputManager->GetNSourcePosParameters();
+    for(G4int i=0;i<NSourcePosParameters;i++){
+      SourcePosParameters[i]=theInputManager->GetSourcePosParameter(i);
+    }
+    TrX=SourcePosParameters[0]; TrY=SourcePosParameters[1]; TrZ=SourcePosParameters[2];
+    dir_ux=SourcePosParameters[3]/cm; dir_uy=SourcePosParameters[4]/cm; dir_uz=SourcePosParameters[5]/cm;
+  }
+  else if(SourcePostType==0){ //then the source is uniformly distributed in a volume 
     G4int SourceVolumeID=theInputManager->GetNSourcePosParameters();
     int sMotherID;
     double vx=0,vy=0,vz=0;
@@ -155,13 +193,16 @@ void SaG4nPrimaryGeneratorAction::Init(){
       SourcePosParameters[i]=theInputManager->GetSourcePosParameter(i);
     }
     if(SourcePostType==1){
-      TrX=SourcePosParameters[1]; TrY=SourcePosParameters[2]; TrZ=SourcePosParameters[3]; 
+      TrX=SourcePosParameters[1]; TrY=SourcePosParameters[2]; TrZ=SourcePosParameters[3];
     }
     else if(SourcePostType==2){
       TrX=SourcePosParameters[3]; TrY=SourcePosParameters[4]; TrZ=SourcePosParameters[5]; 
-    }
+   }
     else if(SourcePostType==3){
       TrX=SourcePosParameters[2]; TrY=SourcePosParameters[3]; TrZ=SourcePosParameters[4]; 
+    }
+    else{
+      G4cout<<" ######### Error in "<<__FILE__<<", line "<<__LINE__<<" #########"<<G4endl;  exit(1);
     }
   }
   //---------------------------------------------------------------------------------------
@@ -173,10 +214,12 @@ void SaG4nPrimaryGeneratorAction::Init(){
   SourceNormFactor=theInputManager->GetSourceNormFactor();
   NSourceEnergies=theInputManager->GetNSourceEnergies();
   SourceEnergy=new G4double[NSourceEnergies];
+  SourceSigma=new G4double[NSourceEnergies];
   SourceCumulProb=new G4double[NSourceEnergies];
   G4double CalculatedNormFactor=0;
   for(G4int i=0;i<NSourceEnergies;i++){
     SourceEnergy[i]=theInputManager->GetSourceEnergy(i);
+    SourceSigma[i]=theInputManager->GetSourceSigma(i);
     SourceCumulProb[i]=theInputManager->GetSourceIntensity(i);
     CalculatedNormFactor+=SourceCumulProb[i];
   }
@@ -199,11 +242,11 @@ void SaG4nPrimaryGeneratorAction::Init(){
   G4cout<<"                        SOURCE ENERGY DISTRIBUTION                       "<<G4endl;
   G4cout<<" ======================================================================= "<<G4endl;
   G4cout<<" Number of initial alpha energies: "<<NSourceEnergies<<G4endl;
-  G4cout<<std::setw(15)<<"Energy (MeV)"<<std::setw(15)<<"Intensity"<<G4endl;
+  G4cout<<std::setw(15)<<"Energy (MeV)"<<std::setw(15)<<"Sigma (MeV)"<<std::setw(15)<<"Intensity"<<G4endl;
   G4cout<<" ----------------------------------------------------------------------- "<<G4endl;
-  G4cout<<std::setw(15)<<SourceEnergy[0]<<std::setw(15)<<SourceCumulProb[0]*SourceNormFactor<<G4endl;
+  G4cout<<std::setw(15)<<SourceEnergy[0]<<std::setw(15)<<SourceSigma[0]<<std::setw(15)<<SourceCumulProb[0]*SourceNormFactor<<G4endl;
   for(G4int i=1;i<NSourceEnergies;i++){
-    G4cout<<std::setw(15)<<SourceEnergy[i]<<std::setw(15)<<(SourceCumulProb[i]-SourceCumulProb[i-1])*SourceNormFactor<<G4endl;
+    G4cout<<std::setw(15)<<SourceEnergy[i]<<std::setw(15)<<SourceSigma[i]<<std::setw(15)<<(SourceCumulProb[i]-SourceCumulProb[i-1])*SourceNormFactor<<G4endl;
   }
   G4cout<<" ======================================================================= "<<G4endl;
   */

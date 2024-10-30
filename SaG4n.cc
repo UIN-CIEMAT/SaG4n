@@ -67,7 +67,7 @@ int main(int argc,char** argv){
   delete visManager;
   delete runManager;
 
-  G4cout<<" Program with input "<<argv[1]<<" finished successfully after "<<difftime(time(NULL),starttime)<<" seconds"<<G4endl;
+  G4cout<<" Job with input "<<argv[1]<<" finished successfully after "<<difftime(time(NULL),starttime)<<" seconds"<<G4endl;
 
   return 0;
 }

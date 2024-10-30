@@ -14,6 +14,8 @@ public:
   ~SaG4nInputManager();
 
   void ReadInput();
+  
+  G4String GetInputFname(){return InputFname;}
 
   G4double GetWorldSize(){return WorldSize;}
   G4int GetNVolumes(){return NVolumes;}
@@ -47,6 +49,7 @@ public:
   G4double GetSourceNormFactor(){return SourceNormFactor;}
   G4int GetNSourceEnergies(){return NSourceEnergies;}
   G4double GetSourceEnergy(G4int id){return SourceEnergy[id];}
+  G4double GetSourceSigma(G4int id){return SourceSigma[id];}
   G4double GetSourceIntensity(G4int id){return SourceIntensity[id];}
 
 private:
@@ -82,6 +85,7 @@ private:
   G4double SourceNormFactor;
   G4int NSourceEnergies;
   G4double* SourceEnergy;
+  G4double* SourceSigma;
   G4double* SourceIntensity;
 };
 

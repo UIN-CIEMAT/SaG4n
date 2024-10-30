@@ -24,6 +24,7 @@ public:
   void WriteResults();
 
   G4int GetEventNumber(){return NEvents;}
+  void PrintProgress();
 
 private:
 
@@ -52,7 +53,9 @@ private:
 
   G4int H_NBins;
   G4double H_MaxEne;
-
+  
+  time_t starttime;
+  G4double NextPrint_minutes;
 };
 
 

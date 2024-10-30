@@ -7,7 +7,7 @@ Authors: Emilio Mendoza Cembranos, Daniel Cano Ott, Vicente Pesudo Fortes and Ro
 
 Contact: [emilio.mendoza@ciemat.es](mailto:emilio.mendoza@ciemat.es), [daniel.cano@ciemat.es](mailto:daniel.cano@ciemat.es), [vicente.pesudo@ciemat.es](mailto:vicente.pesudo@ciemat.es), [roberto.santorelli@ciemat.es](mailto:roberto.santorelli@ciemat.es)
 
-Date: February 2020
+Date: February 2021
 
 GitHub: https://github.com/UIN-CIEMAT/SaG4n
 
@@ -212,6 +212,14 @@ Again, to run them:
 ./build/SaG4n inputs/examples/basic01/source04.inp
 ```
 
+### beam
+
+`inputs/examples/beam/`: one simple input with the source in "beam mode"
+
+ - `beam01.inp`: the source are alpha particles with:
+      + energies sampled according to a Gaussian distribution with mean 10 MeV and standard deviation 0.5 MeV.
+      + momentum direction: they are are emittedin the (0,0,1) direction.
+      + position: they are emitted from a 2 cm radius flat disk perpendicular to the Z axis and centered in (0,0,-1) cm. The position of the alphas are sampled according to a 2D-gaussian distribution centered in the center of the disk and with 0.7 cm standard deviations in X and Y, and always inside the disk (i.e. 2 cm is the maximum distance from the Z axis).
 
 ### decay series
 

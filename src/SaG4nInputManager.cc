@@ -1,5 +1,6 @@
 
 #include <fstream>
+#include <sstream>
 #include "G4ios.hh"
 #include "G4Isotope.hh"
 #include "G4Element.hh"
@@ -35,13 +36,14 @@ SaG4nInputManager::SaG4nInputManager(const char* infpname){
   G4Random::setTheSeed(Seed);
 
   SourcePostType=0,NSourcePosParameters=0,SourceNormFactor=0;NSourceEnergies=0;
-  SourceEnergy=0; SourceIntensity=0;
+  SourceEnergy=0; SourceSigma=0; SourceIntensity=0;
 
 }
 
 SaG4nInputManager::~SaG4nInputManager(){
 
   if(SourceEnergy){delete [] SourceEnergy;}
+  if(SourceSigma){delete [] SourceSigma;}
   if(SourceIntensity){delete [] SourceIntensity;}
 
 }
@@ -71,19 +73,28 @@ void SaG4nInputManager::ReadInput(){
       if(matID>=G4AN_MAXNMATERIALS){
 	G4cout<<" ******* Error reading input. matID max is "<<G4AN_MAXNMATERIALS-1<<" ---> matID = "<<matID<<" *******"<<G4endl; exit(1);
       }
-      for(G4int i=0;i<nIsotopes;i++){
-	in>>ZA[i]>>fraction[i];
-      }
-      in>>word;
-      if(word!="ENDMATERIAL"){
-	G4cout<<" ****** Error reading material "<<matID<<" ******"<<G4endl;
-	G4cout<<" ****** ERROR reading input: "<<InputFname<<" ******"<<G4endl; exit(1);
-      }
-      if(ZA[0]<150){
-	theDefinedMaterials[matID]=CreateMaterialFromElements(MatName,nIsotopes,density,ZA,fraction);
+      if(nIsotopes<=0){ //then we take a material from the NIST database
+	theDefinedMaterials[matID]=G4NistManager::Instance()->FindOrBuildMaterial(MatName);
+	if(theDefinedMaterials[matID]==0){
+	  G4cout<<" Error building NIST material with name = "<<MatName<<G4endl; 
+	  G4cout<<" ########## Error in "<<__FILE__<<", line "<<__LINE__<<" ##########"<<G4endl; exit(1);
+	}	
       }
       else{
-	theDefinedMaterials[matID]=CreateMaterialFromIsotopes(MatName,nIsotopes,density,ZA,fraction);
+	for(G4int i=0;i<nIsotopes;i++){
+	  in>>ZA[i]>>fraction[i];
+	}
+	in>>word;
+	if(word!="ENDMATERIAL"){
+	  G4cout<<" ****** Error reading material "<<matID<<" ******"<<G4endl;
+	  G4cout<<" ****** ERROR reading input: "<<InputFname<<" ******"<<G4endl; exit(1);
+	}
+	if(ZA[0]<150){
+	  theDefinedMaterials[matID]=CreateMaterialFromElements(MatName,nIsotopes,density,ZA,fraction);
+	}
+	else{
+	  theDefinedMaterials[matID]=CreateMaterialFromIsotopes(MatName,nIsotopes,density,ZA,fraction);
+	}
       }
     }
     //----------------------------------------------------------------------------------------------------
@@ -150,7 +161,10 @@ void SaG4nInputManager::ReadInput(){
     //----------------------------------------------------------------------------------------------------
     else if(word=="SOURCE"){
       in>>SourcePostType;
-      if(SourcePostType==0){ // source uniformly distributed inside a volume
+      if(SourcePostType==-1){ // beam mode
+	NSourcePosParameters=8; // x0, y0, z0, ux, uy, uz, rad, sigma
+      }
+      else if(SourcePostType==0){ // source uniformly distributed inside a volume
 	in>>NSourcePosParameters; //VolumeID
       }
       else if(SourcePostType==1){ // Sphere 
@@ -171,14 +185,23 @@ void SaG4nInputManager::ReadInput(){
       in>>SourceNormFactor>>NSourceEnergies;
       SourceEnergy=new G4double[NSourceEnergies];
       SourceIntensity=new G4double[NSourceEnergies];
+      SourceSigma=new G4double[NSourceEnergies];
       G4bool HasChains=false;
+      G4String tmp_str;
+      G4double tmp_val;
+      in.ignore(10000,'\n');
       for(G4int i=0;i<NSourceEnergies;i++){
-	in>>word>>SourceEnergy[i]>>SourceIntensity[i];
+	getline(in,tmp_str);
+	std::istringstream iss(tmp_str);
+	iss>>word>>SourceEnergy[i]>>SourceIntensity[i];
+	if(iss>>tmp_val){SourceSigma[i]=tmp_val;}
+	else{SourceSigma[i]=-1;}
 	if(word=="Chain_Th232"){SourceEnergy[i]=-1; HasChains=true;}
 	else if(word=="Chain_U235"){SourceEnergy[i]=-2; HasChains=true;}
 	else if(word=="Chain_U238"){SourceEnergy[i]=-3; HasChains=true;}
 	else{
 	  SourceEnergy[i]*=MeV;
+	  SourceSigma[i]*=MeV;
 	  if(SourceEnergy[i]<0 || SourceEnergy[i]>200*MeV){
 	    G4cout<<" ******* Error: Alpha energy from the source (i="<<i+1<<") is "<<SourceEnergy[i]/MeV<<" MeV, which is out of the [0,200] MeV range *******"<<G4endl; exit(1);
 	  }
@@ -195,7 +218,7 @@ void SaG4nInputManager::ReadInput(){
     //----------------------------------------------------------------------------------------------------
     else{
       G4cout<<" ****** ERROR reading input: "<<InputFname<<" ******"<<G4endl; 
-    G4cout<<" Last word read was ---> "<<word<<G4endl; exit(1);
+      G4cout<<" Last word read was ---> "<<word<<G4endl; exit(1);
     }
   }
 
@@ -203,6 +226,25 @@ void SaG4nInputManager::ReadInput(){
     G4cout<<" ****** ERROR reading input: "<<InputFname<<" ******"<<G4endl;
     G4cout<<" Last word read was: "<<word<<G4endl; exit(1);
   }
+  in.close();
+  
+  //-------------------------------------------------------------------------
+  // re-calculate volume sizes, subtracting daughters:
+  G4double ToBeSubtracted[G4AN_MAXNVOLUMES];
+  for(G4int i=0;i<G4AN_MAXNVOLUMES;i++){ToBeSubtracted[i]=0;}
+  for(G4int i=0;i<NVolumes;i++){
+    if(MotherID[i]!=0){
+      for(G4int j=0;j<NVolumes;j++){
+	if(VolID[j]==MotherID[i]){
+	  ToBeSubtracted[j]+=VolumeSize[i];
+	}
+      }
+    }
+  }
+  for(G4int i=0;i<NVolumes;i++){
+    VolumeSize[i]-=ToBeSubtracted[i];
+  }
+  //-------------------------------------------------------------------------
 
   //------------------------------------------
   //Check that we can open output files:
@@ -446,12 +488,15 @@ void SaG4nInputManager::AddChainsToSource(){
   }
   
   delete [] SourceEnergy;
+  delete [] SourceSigma;
   delete [] SourceIntensity;
   NSourceEnergies=newNSourceEnergies;
   SourceEnergy=new G4double[NSourceEnergies];
+  SourceSigma=new G4double[NSourceEnergies];
   SourceIntensity=new G4double[NSourceEnergies];
   for(G4int i=0;i<NSourceEnergies;i++){
     SourceEnergy[i]=newSourceEnergy[i];
+    SourceSigma[i]=-1;
     SourceIntensity[i]=newSourceIntensity[i];
   }
   
