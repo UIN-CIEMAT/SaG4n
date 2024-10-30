@@ -49,6 +49,10 @@ SaG4n is a Geant4 application, so it can be compiled in the same way as any othe
 
 Geant4 has to be previously installed in the computer.
 
+SaG4n comes with its own version of the G4ParticleHP module (used to model the (alpha,xn) reactions), which is practically identical to that of Geant4, but with some minor modifications.
+
+This release has been tested with Geant4.10.5 and Geant4.10.6, and is not expected to work with releases from Geant4.11.0 onwards.
+
 The following commands can be used to install SaG4n (replace `/home/you/geant4-install/...` with the appropriate path):
 ```sh
 mkdir build
