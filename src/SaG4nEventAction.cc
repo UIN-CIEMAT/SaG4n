@@ -27,6 +27,7 @@ SaG4nEventAction:: SaG4nEventAction(SaG4nInputManager* anInputManager){
     NeutronSpectra_NEntries[i]=0;
     AlphaFlux_NEntries[i]=0;
   }
+  SourceEnergy=0;
 }
 
 
@@ -43,6 +44,7 @@ SaG4nEventAction::~SaG4nEventAction(){
     if(NeutronSpectra_NEntries[i]!=0){delete [] NeutronSpectra_NEntries[i];}
     if(AlphaFlux_NEntries[i]!=0){delete [] AlphaFlux_NEntries[i];}
   }
+  if(SourceEnergy){delete [] SourceEnergy;}
 
 }
 
@@ -174,6 +176,16 @@ void SaG4nEventAction::AddFlux(G4double EneUp,G4double EneLow,G4double StepLengt
 
 }
 
+void SaG4nEventAction::AddSourceEnergy(G4double Energy){
+
+  if(OutputType1==0){return;} //No histograms
+
+  G4int binNumber=(Energy/H_MaxEne)*H_NBins+1;
+  if(binNumber>H_NBins+1){binNumber=H_NBins+1;}
+  SourceEnergy[binNumber]++;
+
+}
+
 
 void SaG4nEventAction::WriteResults(){
 
@@ -238,6 +250,16 @@ void SaG4nEventAction::WriteResults(){
       out<<G4endl;
     }
     //----------------------------------------------------------------
+    //----------------------------------------------------------------
+    //Source:
+    Hname="Source_00";
+    out<<Hname<<"  "<<H_NBins<<"  "<<H_MaxEne<<G4endl;
+    for(G4int j=0;j<=H_NBins+1;j++){
+      out<<std::setw(CWidth)<<(H_MaxEne/H_NBins)*j<<" "<<std::setw(CWidth)<<SourceEnergy[j]/(G4double)NEvents<<" "<<std::setw(CWidth)<<sqrt((G4double)SourceEnergy[j])/NEvents<<G4endl;
+    }
+    out<<G4endl;
+
+    //----------------------------------------------------------------
     out.close();
   }
   else if(OutputFormat==2){ // ROOT format
@@ -260,6 +282,9 @@ void SaG4nEventAction::WriteResults(){
       theAnalysisManager->CreateH1(Hname,"Alpha flux",H_NBins, 0.,H_MaxEne);
       theAnalysisManager->SetH1XAxisTitle(NVolumes+i,"Alpha energy (MeV)");
     }
+    Hname="Source_00";
+    theAnalysisManager->CreateH1(Hname,"Source energy spectrum",H_NBins, 0.,H_MaxEne);
+    theAnalysisManager->SetH1XAxisTitle(2*NVolumes,"Alpha energy (MeV)");
     //-------------------------------------------------------------------
     //----------------------------------------------------------------
     //geant4.10.05/source/analysis/g4tools/include/tools/histo/h1
@@ -278,6 +303,10 @@ void SaG4nEventAction::WriteResults(){
 	//error2=AlphaFlux_Sum2[i][j]/NEvents; //option 2
 	h1->set_bin_content(j,AlphaFlux_NEntries[i][j],AlphaFlux_Sum[i][j]*cm2,error2*cm2*cm2,0,0);
       }
+    }
+    tools::histo::h1d* h1=theAnalysisManager->GetH1(2*NVolumes);
+    for(G4int j=0;j<=H_NBins+1;j++){
+      h1->set_bin_content(j,SourceEnergy[j],SourceEnergy[j]/(G4double)NEvents,SourceEnergy[j]/(G4double)NEvents/(G4double)NEvents,0,0);
     }
     theAnalysisManager->Write();
     theAnalysisManager->CloseFile();
@@ -326,7 +355,10 @@ void SaG4nEventAction::Init(){
       AlphaFlux_OneEvent[i][j]=0;
     }
   }
-
+  SourceEnergy=new G4int[H_NBins+2];
+  for(G4int j=0;j<=H_NBins+1;j++){
+    SourceEnergy[j]=0;
+  }
 }
 
 

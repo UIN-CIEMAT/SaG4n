@@ -15,6 +15,7 @@
 SaG4nInputManager::SaG4nInputManager(const char* infpname){
 
   InputFname=infpname;
+  SaG4nDatabaseDir="unknown_SaG4nDatabaseDirPath";
   InputAlreadyRead=false;
   for(G4int i=0;i<G4AN_MAXNMATERIALS;i++){
     theDefinedMaterials[i]=0;
@@ -36,7 +37,7 @@ SaG4nInputManager::SaG4nInputManager(const char* infpname){
   G4Random::setTheSeed(Seed);
 
   SourcePostType=0,NSourcePosParameters=0,SourceNormFactor=0;NSourceEnergies=0;
-  SourceEnergy=0; SourceSigma=0; SourceIntensity=0;
+  SourceName=0; SourceEnergy=0; SourceSigma=0; SourceIntensity=0;
 
 }
 
@@ -158,6 +159,9 @@ void SaG4nInputManager::ReadInput(){
       in>>Seed;
       G4Random::setTheSeed(Seed);
     }
+    else if(word=="SAG4NDATABASEDIR"){
+      in>>SaG4nDatabaseDir;
+    }
     //----------------------------------------------------------------------------------------------------
     else if(word=="SOURCE"){
       in>>SourcePostType;
@@ -183,36 +187,28 @@ void SaG4nInputManager::ReadInput(){
 	for(G4int i=0;i<NSourcePosParameters;i++){in>>SourcePosParameters[i]; SourcePosParameters[i]*=cm;}
       }
       in>>SourceNormFactor>>NSourceEnergies;
+      SourceName=new G4String[NSourceEnergies];
       SourceEnergy=new G4double[NSourceEnergies];
       SourceIntensity=new G4double[NSourceEnergies];
       SourceSigma=new G4double[NSourceEnergies];
-      G4bool HasChains=false;
       G4String tmp_str;
       G4double tmp_val;
       in.ignore(10000,'\n');
       for(G4int i=0;i<NSourceEnergies;i++){
 	getline(in,tmp_str);
 	std::istringstream iss(tmp_str);
-	iss>>word>>SourceEnergy[i]>>SourceIntensity[i];
+	iss>>SourceName[i]>>SourceEnergy[i]>>SourceIntensity[i];
 	if(iss>>tmp_val){SourceSigma[i]=tmp_val;}
 	else{SourceSigma[i]=-1;}
-	if(word=="Chain_Th232"){SourceEnergy[i]=-1; HasChains=true;}
-	else if(word=="Chain_U235"){SourceEnergy[i]=-2; HasChains=true;}
-	else if(word=="Chain_U238"){SourceEnergy[i]=-3; HasChains=true;}
-	else{
-	  SourceEnergy[i]*=MeV;
-	  SourceSigma[i]*=MeV;
-	  if(SourceEnergy[i]<0 || SourceEnergy[i]>200*MeV){
-	    G4cout<<" ******* Error: Alpha energy from the source (i="<<i+1<<") is "<<SourceEnergy[i]/MeV<<" MeV, which is out of the [0,200] MeV range *******"<<G4endl; exit(1);
-	  }
+	SourceEnergy[i]*=MeV;
+	SourceSigma[i]*=MeV;
+	if(SourceEnergy[i]>200*MeV){
+	  G4cout<<" ******* Error: Alpha energy from the source (i="<<i+1<<") is "<<SourceEnergy[i]/MeV<<" MeV, which is out of the [0,200] MeV range *******"<<G4endl; exit(1);
 	}
       }
       in>>word;
       if(word!="ENDSOURCE"){
 	G4cout<<" ****** ERROR reading input: "<<InputFname<<" --> "<<word<<" (Source) ******"<<G4endl; exit(1);
-      }
-      if(HasChains){
-	AddChainsToSource();
       }
     }
     //----------------------------------------------------------------------------------------------------
@@ -227,6 +223,8 @@ void SaG4nInputManager::ReadInput(){
     G4cout<<" Last word read was: "<<word<<G4endl; exit(1);
   }
   in.close();
+
+  ComputeSourceIntensities();
   
   //-------------------------------------------------------------------------
   // re-calculate volume sizes, subtracting daughters:
@@ -424,7 +422,7 @@ void SaG4nInputManager::GetVolumeTrVector(G4int id,G4double& vx,G4double& vy,G4d
 
 
 
-void SaG4nInputManager::AddChainsToSource(){
+void SaG4nInputManager::ComputeSourceIntensities(){
 
   //==============================================================================================
   G4int const np_Th232=26;
@@ -444,12 +442,7 @@ void SaG4nInputManager::AddChainsToSource(){
   G4double newSourceEnergy[10000];
   G4double newSourceIntensity[10000];
   for(G4int i=0;i<NSourceEnergies;i++){
-    if(SourceEnergy[i]>0){
-      newSourceEnergy[newNSourceEnergies]=SourceEnergy[i];
-      newSourceIntensity[newNSourceEnergies]=SourceIntensity[i];
-      newNSourceEnergies++;
-    }
-    else if(SourceEnergy[i]>-1.01 && SourceEnergy[i]<-0.99){//Th232
+    if(SourceName[i]=="Chain_Th232"){
       G4double renorm=0;
       for(G4int j=0;j<np_Th232;j++){
 	renorm+=Ia_Th232[j];
@@ -460,7 +453,7 @@ void SaG4nInputManager::AddChainsToSource(){
 	newNSourceEnergies++;
       }
     }
-    else if(SourceEnergy[i]>-2.01 && SourceEnergy[i]<-1.99){//U235
+    else if(SourceName[i]=="Chain_U235"){
       G4double renorm=0;
       for(G4int j=0;j<np_U235;j++){
 	renorm+=Ia_U235[j];
@@ -471,7 +464,7 @@ void SaG4nInputManager::AddChainsToSource(){
 	newNSourceEnergies++;
       }
     }
-    else if(SourceEnergy[i]>-3.01 && SourceEnergy[i]<-2.99){//U238
+    else if(SourceName[i]=="Chain_U238"){
       G4double renorm=0;
       for(G4int j=0;j<np_U238;j++){
 	renorm+=Ia_U238[j];
@@ -482,22 +475,59 @@ void SaG4nInputManager::AddChainsToSource(){
 	newNSourceEnergies++;
       }
     }
+    else if(SourceEnergy[i]<0){
+      char sfnamefullpath[2000];
+      sprintf(sfnamefullpath,"%s/AlphaSpectra/%s",SaG4nDatabaseDir.c_str(),SourceName[i].c_str());
+      std::ifstream in(sfnamefullpath);
+      if(!in.good()){
+	G4cout<<" ########## Error reading the source. File (with full path: "<<sfnamefullpath<<") not found. Maybe SAG4NDATABASEDIR is not in the input ##########"<<G4endl;
+	G4cout<<" ######### Error in "<<__FILE__<<", line "<<__LINE__<<" #########"<<G4endl;  exit(1);
+      }
+      G4int np_file=0;
+      in>>np_file;
+      G4String dummyword;
+      G4double Ea_file[10000],Ia_file[10000];
+      for(G4int j=0;j<np_file;j++){
+	in>>dummyword>>Ea_file[j]>>Ia_file[j];
+      }
+      if(!in.good()){
+	G4cout<<" ########## Error reading file "<<sfnamefullpath<<" ##########"<<G4endl;
+	G4cout<<" ######### Error in "<<__FILE__<<", line "<<__LINE__<<" #########"<<G4endl;  exit(1);
+      }
+      in.close();
+      G4double renorm=0;
+      for(G4int j=0;j<np_file;j++){
+	renorm+=Ia_file[j];
+      }
+      for(G4int j=0;j<np_file;j++){
+	newSourceEnergy[newNSourceEnergies]=Ea_file[j]*MeV;
+	newSourceIntensity[newNSourceEnergies]=Ia_file[j]/renorm*SourceIntensity[i]/std::fabs(SourceEnergy[i]/MeV);
+	newNSourceEnergies++;
+      }
+    }
     else{
-      G4cout<<" ######### Error in "<<__FILE__<<", line "<<__LINE__<<" #########"<<G4endl;  exit(1);
+      newSourceEnergy[newNSourceEnergies]=SourceEnergy[i];
+      newSourceIntensity[newNSourceEnergies]=SourceIntensity[i];
+      newNSourceEnergies++;
     }
   }
   
+  delete [] SourceName;
   delete [] SourceEnergy;
   delete [] SourceSigma;
   delete [] SourceIntensity;
   NSourceEnergies=newNSourceEnergies;
+  SourceName=new G4String[NSourceEnergies];
   SourceEnergy=new G4double[NSourceEnergies];
   SourceSigma=new G4double[NSourceEnergies];
   SourceIntensity=new G4double[NSourceEnergies];
   for(G4int i=0;i<NSourceEnergies;i++){
+    SourceName[i]="Alpha";
     SourceEnergy[i]=newSourceEnergy[i];
     SourceSigma[i]=-1;
     SourceIntensity[i]=newSourceIntensity[i];
   }
   
 }
+
+

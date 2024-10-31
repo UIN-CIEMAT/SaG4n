@@ -1,6 +1,23 @@
 
 
 ================================================================================
+                               October 2024
+--------------------------------------------------------------------------------
+E. Mendoza
+  - SaG4n.01.04
+     + We have included the possibility of using the alphas of a given
+     radioactive decay in the source, without having to write all the alpha
+     energies and intensities in the input. For this, a database has been added
+     in this release, in the new directory “data/AlphaSpectra”. The database has
+     been obtained mainly from the ENDF/B-VIII.0 decay data library.
+     + A new keyword is introduced in the input file in order to provide the path
+     to the mentioned database.
+     + A new example with makes use of this database is provided in examples/fuel.
+     + A new output histogram is provided by the code, “Source_00”, with the
+     energy spectrum of the alpha particle source used in the calculation.
+================================================================================
+
+================================================================================
                                March 2022
 --------------------------------------------------------------------------------
 E. Mendoza

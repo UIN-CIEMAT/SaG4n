@@ -55,10 +55,11 @@ public:
 private:
   G4Material* CreateMaterialFromIsotopes(G4String MatName,G4int nIsotopes,G4double density,G4int* ZA,G4double* atomicfraction);
   G4Material* CreateMaterialFromElements(G4String MatName,G4int nElements,G4double density,G4int* Element_Z,G4double* elementfraction); // if elementfraction[i]>0 then it is atom fraction; if elementfraction[i]<0 then it is mass fraction
-  void AddChainsToSource();
+  void ComputeSourceIntensities();
 
 private:
   G4String InputFname;
+  G4String SaG4nDatabaseDir;
   G4bool InputAlreadyRead;
 
   G4double WorldSize;
@@ -84,6 +85,7 @@ private:
   G4double SourcePosParameters[100];
   G4double SourceNormFactor;
   G4int NSourceEnergies;
+  G4String* SourceName;
   G4double* SourceEnergy;
   G4double* SourceSigma;
   G4double* SourceIntensity;

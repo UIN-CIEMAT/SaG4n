@@ -19,6 +19,7 @@ public:
   void  BeginOfEventAction(const G4Event*);
   void  EndOfEventAction(const G4Event*);
 
+  void AddSourceEnergy(G4double Energy);
   void AddSecondaryParticle(G4String parname,G4double Energy,G4double weight,G4int VolumeID);
   void AddFlux(G4double EneUp,G4double EneLow,G4double StepLength,G4double weight,G4int VolumeID);
   void WriteResults();
@@ -49,6 +50,8 @@ private:
   G4int* AlphaFlux_NEntries[G4AN_MAXNVOLUMES]; //Number of entries in Sum and Sum2 spectra
   G4int NeutronSpectra_NFilled[G4AN_MAXNVOLUMES]; //Number of entries in the event
   G4int AlphaFlux_NFilled[G4AN_MAXNVOLUMES]; //Number of entries in the event
+  //-------------------------------------------------------------
+  G4int* SourceEnergy;
   //-------------------------------------------------------------
 
   G4int H_NBins;

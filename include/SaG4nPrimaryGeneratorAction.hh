@@ -4,6 +4,7 @@
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "globals.hh"
 #include "SaG4nInputManager.hh"
+#include "SaG4nEventAction.hh"
 
 class G4ParticleGun;
 
@@ -38,6 +39,7 @@ private:
   G4double* SourceSigma;
   G4double* SourceCumulProb;
 
+  SaG4nEventAction* theEventAction;  
 
 };
 

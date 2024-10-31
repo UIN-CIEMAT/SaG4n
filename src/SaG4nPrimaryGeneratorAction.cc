@@ -7,7 +7,7 @@
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "Randomize.hh"
-
+#include "G4RunManager.hh"
 
 SaG4nPrimaryGeneratorAction::SaG4nPrimaryGeneratorAction(SaG4nInputManager* anInputManager){
 
@@ -19,6 +19,7 @@ SaG4nPrimaryGeneratorAction::SaG4nPrimaryGeneratorAction(SaG4nInputManager* anIn
   AlreadyInit=false;
   TrX=0; TrY=0; TrZ=0;
   dir_ux=0; dir_uy=0; dir_uz=1;
+  theEventAction=0;
 }
 
 
@@ -32,6 +33,10 @@ void SaG4nPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
 
   Init();
 
+  if(theEventAction==0){
+    theEventAction=(SaG4nEventAction*)G4RunManager::GetRunManager()->GetUserEventAction();
+  }
+  
   //-----------------------------------------------------------------
   //Energy:
   G4double parEnergy=0;
@@ -48,6 +53,7 @@ void SaG4nPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent){
     }
   }
   fParticleGun->SetParticleEnergy(parEnergy);
+  theEventAction->AddSourceEnergy(parEnergy);
   //-----------------------------------------------------------------
 
 

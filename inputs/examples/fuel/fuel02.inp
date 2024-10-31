@@ -1,0 +1,64 @@
+
+
+# VOLUMES: 
+
+# A sphere of 10 cm diameter placed in the center:
+VOLUME 1 Vol01 1 1 0 DummyWord 5 0 0 0
+
+
+# MATERIALS:
+
+MATERIAL 1 PuO2 11.5 8
+8016 199.514
+8017 0.076
+8018 0.41
+94238  0.1
+94239 59.90
+94240 20.00
+94241 10.00
+94242 10.00
+ENDMATERIAL
+
+
+################################################################################
+###                                SOURCE                                    ###
+################################################################################
+
+
+SOURCE 1 0 0 0 0
+1.00 5
+Pu238 -87.7     0.1
+Pu239 -24110   59.90
+Pu240 -6561    20.00
+Pu241 -5785    10.00
+Pu242 -373000  10.00
+ENDSOURCE
+
+SAG4NDATABASEDIR ./data
+
+################################################################################
+###                                PHYSICS                                   ###
+################################################################################
+
+MAXSTEPSIZE 0.001     # OPTIONAL
+BIASFACTOR 10000   # OPTIONAL
+
+################################################################################
+###                                OTHER                                     ###
+################################################################################
+
+NEVENTS 10000000       # OPTIONAL
+OUTPUTFILE ./outputs/examples/fuel/fuel02 # without the extension
+OUTPUTTYPE 1 0 2 #OPTIONAL
+
+# if defined, interactive running mode:
+# INTERACTIVE
+
+# if defined, secondary particles are not killed when created:
+# DONOTKILLSECONDARIES
+
+# New seed for the MC (default is 1234567):
+SEED 1234567 #OPTIONAL
+
+
+END
