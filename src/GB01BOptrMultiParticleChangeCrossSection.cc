@@ -75,9 +75,9 @@ ProposeOccurenceBiasingOperation(const G4Track* track,
   // -- limit application of biasing to primary particles only:
   if ( track->GetParentID() != 0 ) return 0;
   // -- limit to at most 5 biased interactions:
-  if ( fnInteractions > 4 )        return 0;
+  //if ( fnInteractions > 4 )        return 0;
   // -- and limit to a weight of at least 0.05:
-  if ( track->GetWeight() < 0.05 ) return 0;
+  //if ( track->GetWeight() < 0.05 ) return 0;
   
   if ( fCurrentOperator ) return fCurrentOperator->
                             GetProposedOccurenceBiasingOperation(track, callingProcess);

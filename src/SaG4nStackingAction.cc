@@ -33,10 +33,16 @@ G4ClassificationOfNewTrack SaG4nStackingAction::ClassifyNewTrack(const G4Track* 
     G4double parEnergy=aTrack->GetDynamicParticle()->GetKineticEnergy();
     G4double parWeight=aTrack->GetWeight();
     G4int VolID=aTrack->GetVolume()->GetCopyNo()-1;
-
+    G4double ux=aTrack->GetDynamicParticle()->GetMomentumDirection().x();
+    G4double uy=aTrack->GetDynamicParticle()->GetMomentumDirection().y();
+    G4double uz=aTrack->GetDynamicParticle()->GetMomentumDirection().z();
+    G4double costheta=0;
+    if(ux*ux+uy*uy+uz*uz>0){
+      costheta=uz/sqrt(ux*ux+uy*uy+uz*uz);
+    }
 
     if(VolID>=0){
-      theEventAction->AddSecondaryParticle(parName,parEnergy,parWeight,VolID);
+      theEventAction->AddSecondaryParticle(parName,parEnergy,parWeight,VolID,costheta);
     }
     //======================================================================================
     //Write results, if OutputType2==1 or OutputType2==2
@@ -45,9 +51,6 @@ G4ClassificationOfNewTrack SaG4nStackingAction::ClassifyNewTrack(const G4Track* 
       G4double pos_x=aTrack->GetPosition().x();
       G4double pos_y=aTrack->GetPosition().y();
       G4double pos_z=aTrack->GetPosition().z();
-      G4double ux=aTrack->GetDynamicParticle()->GetMomentumDirection().x();
-      G4double uy=aTrack->GetDynamicParticle()->GetMomentumDirection().y();
-      G4double uz=aTrack->GetDynamicParticle()->GetMomentumDirection().z();
       G4int CWidth=15;
       out<<std::setw(CWidth)<<EventNumer<<" "<<std::setw(CWidth)<<parName<<"  "<<std::setw(CWidth)<<parEnergy/MeV<<"  "<<std::setw(CWidth)<<parWeight<<"  "<<std::setw(CWidth)<<pos_x/cm<<"  "<<std::setw(CWidth)<<pos_y/cm<<"  "<<std::setw(CWidth)<<pos_z/cm<<"  "<<std::setw(CWidth)<<ux<<"  "<<std::setw(CWidth)<<uy<<"  "<<std::setw(CWidth)<<uz;
       out<<G4endl;

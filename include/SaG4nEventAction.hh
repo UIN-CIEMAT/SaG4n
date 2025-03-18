@@ -7,6 +7,7 @@
 #include <ctime>
 //#include "g4root.hh"
 #include "SaG4nInputManager.hh"
+#include "G4AnalysisManager.hh"
 
 class SaG4nEventAction : public G4UserEventAction
 {
@@ -20,7 +21,7 @@ public:
   void  EndOfEventAction(const G4Event*);
 
   void AddSourceEnergy(G4double Energy);
-  void AddSecondaryParticle(G4String parname,G4double Energy,G4double weight,G4int VolumeID);
+  void AddSecondaryParticle(G4String parname,G4double Energy,G4double weight,G4int VolumeID,G4double costheta);
   void AddFlux(G4double EneUp,G4double EneLow,G4double StepLength,G4double weight,G4int VolumeID);
   void WriteResults();
 
@@ -56,6 +57,8 @@ private:
 
   G4int H_NBins;
   G4double H_MaxEne;
+  G4bool Create2DHisto01;
+  G4AnalysisManager* theAnalysisManager;
   
   time_t starttime;
   G4double NextPrint_minutes;

@@ -3,7 +3,6 @@
 #include "G4SystemOfUnits.hh"
 #include "Randomize.hh"
 #include "G4RunManager.hh"
-#include "G4AnalysisManager.hh"
 
 
 SaG4nEventAction:: SaG4nEventAction(SaG4nInputManager* anInputManager){
@@ -16,6 +15,7 @@ SaG4nEventAction:: SaG4nEventAction(SaG4nInputManager* anInputManager){
   NormFactor=1;
   H_NBins=1000;
   H_MaxEne=20*MeV;
+  Create2DHisto01=false;
   NextPrint_minutes=1;
   for(G4int i=0;i<G4AN_MAXNVOLUMES;i++){
     NeutronSpectra_OneEvent[i]=0;
@@ -28,6 +28,7 @@ SaG4nEventAction:: SaG4nEventAction(SaG4nInputManager* anInputManager){
     AlphaFlux_NEntries[i]=0;
   }
   SourceEnergy=0;
+  theAnalysisManager=0;
 }
 
 
@@ -122,7 +123,7 @@ void  SaG4nEventAction::EndOfEventAction(const G4Event*){
 
 
 
-void SaG4nEventAction::AddSecondaryParticle(G4String parname,G4double Energy,G4double weight,G4int VolumeID){
+void SaG4nEventAction::AddSecondaryParticle(G4String parname,G4double Energy,G4double weight,G4int VolumeID,G4double costheta){
 
   if(OutputType1==0){return;} //No histograms
 
@@ -133,6 +134,9 @@ void SaG4nEventAction::AddSecondaryParticle(G4String parname,G4double Energy,G4d
     NeutronSpectra_OneEvent[VolumeID][binNumber]+=weight;
     NeutronSpectra_NFilled[VolumeID]++;
     //-------------------------------------------------------------
+    if(Create2DHisto01){
+      theAnalysisManager->FillH2(0,costheta,Energy/MeV,weight);
+    }
   }
 
 }
@@ -265,10 +269,12 @@ void SaG4nEventAction::WriteResults(){
   else if(OutputFormat==2){ // ROOT format
     //-------------------------------------------------------------------
     //Init Analysis Manager
-    G4AnalysisManager* theAnalysisManager=G4AnalysisManager::Instance();
-    G4bool fileOpen=theAnalysisManager->OpenFile(theInputManager->GetOutFname()+G4String(".root"));
-    if(!fileOpen){
-      G4cout<<" ############ Error opening "<<theInputManager->GetOutFname()+G4String(".root")<<" (please set the appropriate path in the OUTPUTFILE field of the input file) ############"<<G4endl; exit(1);
+    if(!theAnalysisManager){ theAnalysisManager=G4AnalysisManager::Instance();}
+    if(!theAnalysisManager->IsOpenFile()){
+      G4bool fileOpen=theAnalysisManager->OpenFile(theInputManager->GetOutFname()+G4String(".root"));
+      if(!fileOpen){
+	G4cout<<" ############ Error opening "<<theInputManager->GetOutFname()+G4String(".root")<<" (please set the appropriate path in the OUTPUTFILE field of the input file) ############"<<G4endl; exit(1);
+      }
     }
     //Neutron spectrum and alpha flux histograms:
     for(G4int i=0;i<NVolumes;i++){
@@ -308,6 +314,10 @@ void SaG4nEventAction::WriteResults(){
     for(G4int j=0;j<=H_NBins+1;j++){
       h1->set_bin_content(j,SourceEnergy[j],SourceEnergy[j]/(G4double)NEvents,SourceEnergy[j]/(G4double)NEvents/(G4double)NEvents,0,0);
     }
+    if(Create2DHisto01){
+      theAnalysisManager->ScaleH2(0,NormFactor/NEvents);
+    }
+    
     theAnalysisManager->Write();
     theAnalysisManager->CloseFile();
     //delete theAnalysisManager;  not needed in Geant4 11.0.0 - G4AnalysisManager takes care of it automatically
@@ -333,6 +343,18 @@ void SaG4nEventAction::Init(){
 
   if(OutputType1==0){return;} //then no histograms
 
+  if(theInputManager->GetSourcePostType()==-1 && OutputType1==1 && OutputFormat==2){
+    Create2DHisto01=true;
+    theAnalysisManager=G4AnalysisManager::Instance();
+    G4bool fileOpen=theAnalysisManager->OpenFile(theInputManager->GetOutFname()+G4String(".root"));
+    if(!fileOpen){
+      G4cout<<" ############ Error opening "<<theInputManager->GetOutFname()+G4String(".root")<<" (please set the appropriate path in the OUTPUTFILE field of the input file) ############"<<G4endl; exit(1);
+    }
+    theAnalysisManager->CreateH2("NAngleEnergy","Angle-Ene histo",H_NBins,-1,1,H_NBins,0,H_MaxEne);
+    theAnalysisManager->SetH2XAxisTitle(0,"costheta");
+    theAnalysisManager->SetH2YAxisTitle(0,"Neutron energy (MeV)");
+  }
+  
   NVolumes=theInputManager->GetNVolumes();
 
   for(G4int i=0;i<NVolumes;i++){

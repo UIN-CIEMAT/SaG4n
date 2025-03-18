@@ -1,6 +1,23 @@
 
 
 ================================================================================
+                               March 2025
+--------------------------------------------------------------------------------
+E. Mendoza
+  - SaG4n.01.05
+     +  We have noticed that SaG4n sometimes produced erroneous results when
+     calculating neutron production in low-density materials, i.e., gases. We
+     have corrected the code and the problem is now fixed.
+     + The previous releases of SaG4n did not compile with Geant4-11.3.0. We
+     have modified the code to make it compatible with this new Geant4 release.
+     + A new output histogram is provided by the code in some cases. If SaG4n is
+     running in beam mode (SPosType = -1) and output histograms are requested in
+     ROOT format, then a new 2D-histogram will appear in the root ouput file,
+     with the angular-energy distribution of the generated neutrons.
+================================================================================
+
+
+================================================================================
                                October 2024
 --------------------------------------------------------------------------------
 E. Mendoza

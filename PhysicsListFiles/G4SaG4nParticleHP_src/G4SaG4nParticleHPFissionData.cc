@@ -132,7 +132,8 @@ void G4SaG4nParticleHPFissionData::BuildPhysicsTable(const G4ParticleDefinition&
 
   // make a PhysicsVector for each element
 
-  static G4ThreadLocal G4ElementTable *theElementTable  = 0 ; if (!theElementTable) theElementTable= G4Element::GetElementTable();
+  //static G4ThreadLocal G4ElementTable *theElementTable  = 0 ; if (!theElementTable) theElementTable= G4Element::GetElementTable();
+  auto theElementTable = G4Element::GetElementTable();
   for( size_t i=0; i<numberOfElements; ++i )
   {
     G4PhysicsVector* physVec = G4SaG4nParticleHPData::
@@ -168,7 +169,8 @@ void G4SaG4nParticleHPFissionData::DumpPhysicsTable(const G4ParticleDefinition& 
    G4cout << G4endl;
 
    size_t numberOfElements = G4Element::GetNumberOfElements();
-   static G4ThreadLocal G4ElementTable *theElementTable  = 0 ; if (!theElementTable) theElementTable= G4Element::GetElementTable();
+   //static G4ThreadLocal G4ElementTable *theElementTable  = 0 ; if (!theElementTable) theElementTable= G4Element::GetElementTable();
+   auto theElementTable = G4Element::GetElementTable();
 
    for ( size_t i = 0 ; i < numberOfElements ; ++i )
    {

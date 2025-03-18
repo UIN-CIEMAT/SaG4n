@@ -128,9 +128,12 @@ GB01BOptrChangeCrossSection::ProposeOccurenceBiasingOperation(const G4Track*    
   G4double analogXS = 1./analogInteractionLength;
 
   //-------------------------------
-  G4int ContainsElastic=(G4int)callingProcess->GetProcessName().find("Elastic");
-  if(ContainsElastic>=0 && ContainsElastic<1000){return 0;} // then this is an elastic reaction and then it is not biased
+  //G4int ContainsElastic=(G4int)callingProcess->GetProcessName().find("Elastic");
+  //if(ContainsElastic>=0 && ContainsElastic<1000){return 0;} // then this is an elastic reaction and then it is not biased
 
+  //Biasing in inelastic only:
+  G4int ContainsInelastic=(G4int)callingProcess->GetProcessName().find("Inelastic");
+  if(ContainsInelastic<0 || ContainsInelastic>=1000){return 0;} 
   
   // -- Choose a constant cross-section bias. But at this level, this factor can be made
   // -- direction dependent, like in the exponential transform MCNP case, or it

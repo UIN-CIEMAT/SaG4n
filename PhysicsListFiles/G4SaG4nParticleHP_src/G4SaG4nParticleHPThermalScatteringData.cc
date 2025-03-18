@@ -259,7 +259,8 @@ void G4SaG4nParticleHPThermalScatteringData::BuildPhysicsTable(const G4ParticleD
    }
 
    //Searching TS Elements 
-   static G4ThreadLocal G4ElementTable* theElementTable  = 0 ; if (!theElementTable) theElementTable= G4Element::GetElementTable();
+   //static G4ThreadLocal G4ElementTable* theElementTable  = 0 ; if (!theElementTable) theElementTable= G4Element::GetElementTable();
+   auto theElementTable = G4Element::GetElementTable();
    size_t numberOfElements = G4Element::GetNumberOfElements();
    //size_t numberOfThermalElements = 0; 
    for ( size_t i = 0 ; i < numberOfElements ; i++ )

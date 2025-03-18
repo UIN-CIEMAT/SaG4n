@@ -7,7 +7,7 @@ Authors: Emilio Mendoza Cembranos, Daniel Cano Ott, Vicente Pesudo Fortes and Ro
 
 Contact: [emilio.mendoza@ciemat.es](mailto:emilio.mendoza@ciemat.es), [daniel.cano@ciemat.es](mailto:daniel.cano@ciemat.es), [vicente.pesudo@ciemat.es](mailto:vicente.pesudo@ciemat.es), [roberto.santorelli@ciemat.es](mailto:roberto.santorelli@ciemat.es)
 
-Date: October 2024
+Date: March 2025
 
 GitHub: https://github.com/UIN-CIEMAT/SaG4n
 

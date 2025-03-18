@@ -119,7 +119,8 @@ void G4SaG4nParticleHPJENDLHEData::BuildPhysicsTable( const G4ParticleDefinition
 
    // make a PhysicsVector for each element
 
-   static G4ThreadLocal G4ElementTable *theElementTable  = 0 ; if (!theElementTable) theElementTable= G4Element::GetElementTable();
+   //static G4ThreadLocal G4ElementTable *theElementTable  = 0 ; if (!theElementTable) theElementTable= G4Element::GetElementTable();
+   auto theElementTable = G4Element::GetElementTable();
    vElement.clear();
    vElement.resize( numberOfElements );
    for ( size_t i = 0; i < numberOfElements; ++i )
