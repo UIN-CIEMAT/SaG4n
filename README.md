@@ -196,13 +196,14 @@ Again, to run them:
 ```
 
 
- - `source01.inp`, `source02.inp`, `source03.inp` and `source04.inp`: they are the same input but with different sources. The results from `source01.inp` have to be the same as the sum of the results from `source02.inp`, `source03.inp` and `source04.inp`.
+ - `source01.inp`, `source02.inp`, `source03.inp`, `source04.inp` and `source05.inp`: they are the same input but with different sources. The results from `source01.inp` have to be the same as the sum of the results from `source02.inp`, `source03.inp` and `source04.inp`. The results from `source05.inp` should be the same as the results from `source01.inp`.
 
 ```sh
 ./build/SaG4n inputs/examples/basic01/source01.inp
 ./build/SaG4n inputs/examples/basic01/source02.inp
 ./build/SaG4n inputs/examples/basic01/source03.inp
 ./build/SaG4n inputs/examples/basic01/source04.inp
+./build/SaG4n inputs/examples/basic01/source05.inp
 ```
 
 ### beam
