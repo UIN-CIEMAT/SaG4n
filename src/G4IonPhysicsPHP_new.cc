@@ -47,6 +47,7 @@
 #include "G4IonConstructor.hh"
 
 #include "G4HadronInelasticProcess.hh"
+#include "G4HadronInelasticProcess_SaG4n.hh"
 #include "G4BinaryLightIonReaction.hh"
 #include "G4ComponentGGNuclNuclXsc.hh"
 #include "G4CrossSectionInelastic.hh"
@@ -139,9 +140,9 @@ void G4IonPhysicsPHP_new::ConstructProcess() {
     new G4CrossSectionInelastic( new G4ComponentGGNuclNuclXsc() );
 
   /*
-  // DebugPHP : deuteron
+  // ParticleHP : deuteron
   G4HadronicInteraction* modelDeuteronPHP = 
-    new G4SaG4nParticleHPInelastic( G4Deuteron::Deuteron(), "DebugPHPInelastic" );
+    new G4SaG4nParticleHPInelastic( G4Deuteron::Deuteron(), "ParticleHPInelastic" );
   modelDeuteronPHP->SetMinEnergy( 0.0 );
   modelDeuteronPHP->SetMaxEnergy( maxPHP );
   G4SaG4nParticleHPInelasticData* theDeuteronHPInelasticData = 
@@ -151,9 +152,9 @@ void G4IonPhysicsPHP_new::ConstructProcess() {
   */
 
   /*
-  // DebugPHP : triton
+  // ParticleHP : triton
   G4HadronicInteraction* modelTritonPHP = 
-    new G4SaG4nParticleHPInelastic( G4Triton::Triton(), "DebugPHPInelastic" );
+    new G4SaG4nParticleHPInelastic( G4Triton::Triton(), "ParticleHPInelastic" );
   modelTritonPHP->SetMinEnergy( 0.0 );
   modelTritonPHP->SetMaxEnergy( maxPHP );
   G4SaG4nParticleHPInelasticData* theTritonHPInelasticData = 
@@ -163,9 +164,9 @@ void G4IonPhysicsPHP_new::ConstructProcess() {
   */
 
   /*
-  // DebugPHP : 3He
+  // ParticleHP : 3He
   G4HadronicInteraction* modelHe3PHP = 
-    new G4SaG4nParticleHPInelastic( G4He3::He3(), "DebugPHPInelastic" );
+    new G4SaG4nParticleHPInelastic( G4He3::He3(), "ParticleHPInelastic" );
   modelHe3PHP->SetMinEnergy( 0.0 );
   modelHe3PHP->SetMaxEnergy( maxPHP );
   G4SaG4nParticleHPInelasticData* theHe3HPInelasticData = 
@@ -174,9 +175,9 @@ void G4IonPhysicsPHP_new::ConstructProcess() {
   theHe3HPInelasticData->SetMaxKinEnergy( maxPHP );
   */
 
-  // DebugPHP : alpha
+  // ParticleHP : alpha
   G4HadronicInteraction* modelAlphaPHP = 
-    new G4SaG4nParticleHPInelastic( G4Alpha::Alpha(), "DebugPHPInelastic" );
+    new G4SaG4nParticleHPInelastic( G4Alpha::Alpha(), "ParticleHPInelastic" );
   modelAlphaPHP->SetMinEnergy( 0.0 );
   modelAlphaPHP->SetMaxEnergy( maxPHP );
   G4SaG4nParticleHPInelasticData* theAlphaHPInelasticData = 
@@ -198,11 +199,11 @@ void G4IonPhysicsPHP_new::ConstructProcess() {
 	      nullptr, theIonBC1, theFTFP, theNuclNuclData);
   */
 
-  AddProcess( "dInelastic", G4Deuteron::Deuteron(), 0, 
+  AddProcess( "dInelastic", G4Deuteron::Deuteron(), nullptr, 
 	      0, theIonBC1, theFTFP, theNuclNuclData);
-  AddProcess( "tInelastic", G4Triton::Triton(), 0, 
+  AddProcess( "tInelastic", G4Triton::Triton(), nullptr, 
 	      0, theIonBC1, theFTFP, theNuclNuclData);
-  AddProcess( "He3Inelastic", G4He3::He3(), 0, 
+  AddProcess( "He3Inelastic", G4He3::He3(), nullptr, 
 	      0, theIonBC1, theFTFP, theNuclNuclData);
   AddProcess( "ionInelastic", G4GenericIon::GenericIon(), nullptr, 
 	      nullptr, theIonBC1, theFTFP, theNuclNuclData);
@@ -217,17 +218,34 @@ void G4IonPhysicsPHP_new::AddProcess( const G4String& name, G4ParticleDefinition
                                   G4HadronicInteraction* aFTFP,
 				  G4VCrossSectionDataSet* theNuclNuclData) 
 {
-  G4HadronInelasticProcess* hadi = new G4HadronInelasticProcess( name, part );
-  G4ProcessManager* pManager = part->GetProcessManager();
-  pManager->AddDiscreteProcess( hadi );    
-  hadi->AddDataSet( theNuclNuclData );
-  if ( aPHP ) {
-    hadi->RegisterMe( aPHP );
-    if ( xsecPHP ) {
-      hadi->AddDataSet( xsecPHP );
+
+  if(xsecPHP!=nullptr){
+    G4HadronInelasticProcess_SaG4n* hadi = new G4HadronInelasticProcess_SaG4n( name, part );
+    G4ProcessManager* pManager = part->GetProcessManager();
+    pManager->AddDiscreteProcess( hadi );    
+    hadi->AddDataSet( theNuclNuclData );
+    if ( aPHP ) {
+      hadi->RegisterMe( aPHP );
+      if ( xsecPHP ) {
+	hadi->AddDataSet( xsecPHP );
+      }
     }
+    hadi->RegisterMe( aBIC );
+    if(aFTFP) { hadi->RegisterMe( aFTFP ); }
   }
-  hadi->RegisterMe( aBIC );
-  if(aFTFP) { hadi->RegisterMe( aFTFP ); }
+  else{
+    G4HadronInelasticProcess* hadi = new G4HadronInelasticProcess( name, part );
+    G4ProcessManager* pManager = part->GetProcessManager();
+    pManager->AddDiscreteProcess( hadi );    
+    hadi->AddDataSet( theNuclNuclData );
+    if ( aPHP ) {
+      hadi->RegisterMe( aPHP );
+      if ( xsecPHP ) {
+	hadi->AddDataSet( xsecPHP );
+      }
+    }
+    hadi->RegisterMe( aBIC );
+    if(aFTFP) { hadi->RegisterMe( aFTFP ); }
+  }
 }
 

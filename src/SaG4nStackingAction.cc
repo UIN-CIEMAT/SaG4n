@@ -32,6 +32,7 @@ G4ClassificationOfNewTrack SaG4nStackingAction::ClassifyNewTrack(const G4Track* 
     G4String parName=aTrack->GetDynamicParticle()->GetDefinition()->GetParticleName();
     G4double parEnergy=aTrack->GetDynamicParticle()->GetKineticEnergy();
     G4double parWeight=aTrack->GetWeight();
+    G4double parTime=aTrack->GetGlobalTime();
     G4int VolID=aTrack->GetVolume()->GetCopyNo()-1;
     G4double ux=aTrack->GetDynamicParticle()->GetMomentumDirection().x();
     G4double uy=aTrack->GetDynamicParticle()->GetMomentumDirection().y();
@@ -45,14 +46,17 @@ G4ClassificationOfNewTrack SaG4nStackingAction::ClassifyNewTrack(const G4Track* 
       theEventAction->AddSecondaryParticle(parName,parEnergy,parWeight,VolID,costheta);
     }
     //======================================================================================
-    //Write results, if OutputType2==1 or OutputType2==2
-    if((OutputType2==1 || OutputType2==2) && (parName=="neutron" || parName=="gamma")){
+    //Write results, if OutputType2==1, OutputType2==2 or OutputType2==3
+    if((OutputType2>=1 && OutputType2<=3) && (parName=="neutron" || parName=="gamma")){
       G4int EventNumer=theEventAction->GetEventNumber();
       G4double pos_x=aTrack->GetPosition().x();
       G4double pos_y=aTrack->GetPosition().y();
       G4double pos_z=aTrack->GetPosition().z();
       G4int CWidth=15;
       out<<std::setw(CWidth)<<EventNumer<<" "<<std::setw(CWidth)<<parName<<"  "<<std::setw(CWidth)<<parEnergy/MeV<<"  "<<std::setw(CWidth)<<parWeight<<"  "<<std::setw(CWidth)<<pos_x/cm<<"  "<<std::setw(CWidth)<<pos_y/cm<<"  "<<std::setw(CWidth)<<pos_z/cm<<"  "<<std::setw(CWidth)<<ux<<"  "<<std::setw(CWidth)<<uy<<"  "<<std::setw(CWidth)<<uz;
+      if(OutputType2==3){//More info
+	out<<std::setw(CWidth)<<parTime/ns;
+      }
       out<<G4endl;
       if(OutputType2==2){//More info
         G4int TargetZ=G4SaG4nParticleHPManager::GetInstance()->GetZofLastInteraction(); //Z of the target nucleus
@@ -91,7 +95,7 @@ void SaG4nStackingAction::Init(){
   KillSecondaries=theInputManager->DoKillSecondaries();
 
   OutputType2=theInputManager->GetOutputType2();
-  if(OutputType2==1 || OutputType2==2){
+  if(OutputType2>=1 && OutputType2<=3){
     OutFname=theInputManager->GetOutFname()+G4String(".out");
     out.open(OutFname);
     if(!out.good()){
@@ -99,6 +103,9 @@ void SaG4nStackingAction::Init(){
     }
     G4int CWidth=15;
     out<<std::setw(CWidth)<<"EventNumber"<<" "<<std::setw(CWidth)<<"parName"<<"  "<<std::setw(CWidth)<<"parEnergy (MeV)"<<"  "<<std::setw(CWidth)<<"parWeight"<<"  "<<std::setw(CWidth)<<"pos_x (cm)"<<"  "<<std::setw(CWidth)<<"pos_y (cm)"<<"  "<<std::setw(CWidth)<<"pos_z (cm)"<<"  "<<std::setw(CWidth)<<"ux"<<"  "<<std::setw(CWidth)<<"uy"<<"  "<<std::setw(CWidth)<<"uz";
+    if(OutputType2==3){//More info
+      out<<std::setw(CWidth)<<"parTime (ns)";
+    }
     out<<G4endl;
     if(OutputType2==2){//More info
       out<<"  "<<std::setw(CWidth)<<"TargetZ"<<"  "<<std::setw(CWidth)<<"TargetA"<<"  "<<std::setw(CWidth)<<"KinEne (MeV)";

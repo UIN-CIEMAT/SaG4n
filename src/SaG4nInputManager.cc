@@ -139,7 +139,7 @@ void SaG4nInputManager::ReadInput(){
       if(OutputType1!=0 && OutputType1!=1){
 	G4cout<<" ******* Error reading input. OutType1 = "<<OutputType1<<" not yet defined *******"<<G4endl; exit(1);
       }
-      if(OutputType2!=0 && OutputType2!=1 && OutputType2!=2){
+      if(OutputType2!=0 && OutputType2!=1 && OutputType2!=2 && OutputType2!=3){
 	G4cout<<" ******* Error reading input. OutType2 = "<<OutputType2<<" not yet defined *******"<<G4endl; exit(1);
       }
       if(OutputFormat!=1 && OutputFormat!=2){

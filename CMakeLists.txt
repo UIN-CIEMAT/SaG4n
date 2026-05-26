@@ -19,6 +19,7 @@ endif()
 # Setup Geant4 include directories and compile definitions
 #
 include(${Geant4_USE_FILE})
+add_compile_options(-fno-finite-math-only) 
 
 #----------------------------------------------------------------------------
 # Locate sources and headers for this project

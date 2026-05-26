@@ -1,6 +1,25 @@
 
 
 ================================================================================
+                               May 2026
+--------------------------------------------------------------------------------
+E. Mendoza
+  - SaG4n.01.06
+     +  We have noticed that in some cases the SaG4n results deviated slightly
+     from the correct values. Specifically, we observed deviations from the
+     values reported in Table 3 of https://doi.org/10.1016/j.nima.2020.163659.
+     This was due to certain changes in the Geant4 code that affected the
+     handling of inelastic charged particle interactions, particularly when
+     dealing with resonant cross sections. In this version, we have
+     significantly improved the performance of SaG4n by implementing a new
+     method to handle the inelastic interactions of alpha particles.
+     +  An additional value for the OutType2 flag has been implemented. Now
+     OutType2 can take the value OutType2=3, which is the same as OutType2=1 but
+     with an additional column in the output file with the time when the neutron
+     was generated.
+================================================================================
+
+================================================================================
                                March 2025
 --------------------------------------------------------------------------------
 E. Mendoza
